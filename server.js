@@ -1,35 +1,43 @@
+//모듈을 가져오는 부분.
 const http = require('http');
 const fs = require('fs');
 const qs = require('querystring');
 const bcrypt = require('bcrypt');
 const connection = require('./db.js');
 
-const server = http.createServer((req, res) => {
-  if (req.method === 'GET' && req.url === '/') {
-    fs.readFile('index.html', 'utf8', (err, data) => {
-      if (err) {
+//http모듈로 서버생성
+const server = http.createServer((req, res) => {//req,res 매개변수로 요청과 응답을 받는 부분
+  if (req.method === 'GET' && req.url === '/') {//만약 매서드가get이면서 url이/이면 실행되는 부분
+    fs.readFile('index.html', 'utf8', (err, data) => {//fs모듈로 index.html을 읽는다.data라는 매개변수를 받는다.
+      if (err) {//만약 에러가 나오면 콘솔에 index.html읽기 오류라고 뜨고 res.end로 문서에 Internal Server Error이라는 글이 뜬다.
         console.error('index.html 읽기 오류:', err);
         res.writeHead(500, { 'Content-Type': 'text/plain' });
         res.end('Internal Server Error');
-        return;
+        return;// 리턴을 사용해서 오류가 나게되면 서버가 끝난다.
       }
-      res.writeHead(200, { 'Content-Type': 'text/html' });
-      res.end(data);
+      res.writeHead(200, { 'Content-Type': 'text/html' });//정상코드 200에 텍스트/html이나오게 한다고 알려주고
+      res.end(data);//data라는 매개변수로 html안에있는 데이터를 읽어서 문서(html)에 나타나게 한다.
     });
-  } else if (req.method === 'GET' && req.url === '/signup') {
-    fs.readFile('signup.html', 'utf8', (err, data) => {
-      if (err) {
+  }else if(req.url === "/styles.css") {
+    const css = fs.readFileSync("styles.css");
+    res.statusCode=200;
+    res.setHeader('Content-Type','text/css; charset=utf-8');
+    res.write(css)
+    res.end();
+} else if (req.method === 'GET' && req.url === '/signup') {//그밖에 method가 GET이면서 url이 sinup이면 실행되는 부분
+    fs.readFile('signup.html', 'utf8', (err, data) => {//signup.html 읽는 부분이고 data라는 매개변수로 html안에있는 데이터를 읽는다.
+      if (err) {// 만약 오류라면, 콘솔에 오류라고 나타나면서 res.end로 Internal Server Error 이라고 오류가 문서(html)에 나타나게 한다.
         console.error('signup.html 읽기 오류:', err);
         res.writeHead(500, { 'Content-Type': 'text/plain' });
         res.end('Internal Server Error');
         return;
-      }
-      res.writeHead(200, { 'Content-Type': 'text/html' });
-      res.end(data);
+      }//오류가 나오면 return으로 서버가 끝난다.
+      res.writeHead(200, { 'Content-Type': 'text/html' });//200 상태 코드와 함께 html 데이터를 반환
+      res.end(data);//signup.html안에있는 데이터를 읽어서 res.end로 data를 나타나게 한다.
     });
-  } else if (req.method === 'GET' && req.url === '/login') {
-    fs.readFile('login.html', 'utf8', (err, data) => {
-      if (err) {
+  } else if (req.method === 'GET' && req.url === '/login') {//매서드가GET이고 url이 login이면 실행되는 부분이고
+    fs.readFile('login.html', 'utf8', (err, data) => {//login.html이란걸 읽고 매개변수data로 html안에있는 데이터를 읽는다.
+      if (err) {//오류면 콘솔에 오류라고 나오고 문서에Internal Server Error이라고 글을 나타내고 return으로 서버를 종료
         console.error('login.html 읽기 오류:', err);
         res.writeHead(500, { 'Content-Type': 'text/plain' });
         res.end('Internal Server Error');
@@ -37,11 +45,11 @@ const server = http.createServer((req, res) => {
       }
       res.writeHead(200, { 'Content-Type': 'text/html' });
       res.end(data);
-    });
-  } else if (req.method === 'POST' && req.url === '/signup') {
-    let body = '';
-    req.on('data', chunk => {
-      body += chunk.toString();
+    });//코드 200에 html데이터를 반환 한다고 알려주고 res.end로 위에서 받은 매개변수 data를 문서에 나타나게 한다.
+  } else if (req.method === 'POST' && req.url === '/signup') {//매서드가 POST이고 url이 /signup이면 실행하는 부분
+    let body = '';//데이터를 저장할 빈 문자열 변수를 초기화.
+    req.on('data', chunk => {//
+      body += chunk.toString();//위에서 만든 비워놓은body에 chunk를 사용하여 body에 데이터를 저장.
     });
     req.on('end', async () => {
       const postData = qs.parse(body);
@@ -96,7 +104,7 @@ const server = http.createServer((req, res) => {
             try {
               const passwordMatch = await bcrypt.compare(password, user.password);
               if (passwordMatch) {
-                res.writeHead(302, { 'Location': '/board' });
+                res.writeHead(302, { 'Location': '/' });
                 res.end();
               } else {
                 res.writeHead(401, { 'Content-Type': 'text/plain' });
