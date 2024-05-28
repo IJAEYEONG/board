@@ -3,6 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    a{
+      width: 30px;
+      height: 30px;
+      background-color: gray;
+      border-radius: 5px;
+    }
+  </style>
   <title>Login</title>
 </head>
 <body>
@@ -10,7 +18,7 @@
     <input type="text" name="username" placeholder="아이디"><br>
     <input type="password" name="password" placeholder="비밀번호"><br><br>
     <button type="submit">로그인</button>
-    <button><a href="/signup">회원가입</a></button>
+    <button type="submit" formaction="/signup">회원가입</button>
   </form>
 </body>
 </html>
