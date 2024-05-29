@@ -17,11 +17,6 @@ const parseCookies = (cookie = '') =>
 const server = http.createServer((req, res) => {
   const cookies = parseCookies(req.headers.cookie);
 
-  // 초기 로그인 상태 설정
-  if (!cookies.login && req.url !== '/login' && req.url !== '/signup') {
-    res.setHeader('Set-Cookie', 'login=true');
-  }
-
   if (req.method === 'GET' && req.url === '/') {
     fs.readFile('index.html', 'utf8', (err, data) => {
       if (err) {
@@ -33,9 +28,8 @@ const server = http.createServer((req, res) => {
 
       // 로그인 상태에 따라 링크 변경
       let loginLink = '';
-      if (cookies.login) {
+      if (cookies.login && cookies.login === 'true') {
         loginLink = '<a href="/logout">로그아웃</a>';
-
       } else {
         loginLink = '<a href="/login">로그인</a>';
       }
@@ -43,8 +37,23 @@ const server = http.createServer((req, res) => {
       // HTML에 로그인 링크 삽입
       data = data.replace('%LOGIN_LINK%', loginLink);
 
-      res.writeHead(200, { 'Content-Type': 'text/html' });
-      res.end(data);
+      const query = 'SELECT id, title, date FROM submissions';
+      connection.query(query, (err, results) => {
+        if (err) {
+          console.error('데이터베이스에서 제출물 조회 오류:', err);
+          res.writeHead(500, { 'Content-Type': 'text/plain' });
+          res.end('Internal Server Error');
+          return;
+        }
+        const links = results.map(submission => `
+          <a href="/submission/${submission.id}">${submission.title}</a> - ${submission.date}
+        `).join('<br>');
+
+        data = data.replace('%a%', links);
+
+        res.writeHead(200, { 'Content-Type': 'text/html' });
+        res.end(data);
+      });
     });
   } else if (req.url === "/styles.css") {
     const css = fs.readFileSync("styles.css");
@@ -177,7 +186,7 @@ const server = http.createServer((req, res) => {
           res.end('Internal Server Error');
           return;
         }
-        res.writeHead(302, { 'Location': '/board' });
+        res.writeHead(302, { 'Location': '/' });
         res.end();
       });
     });

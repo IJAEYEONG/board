@@ -1,33 +1,22 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>test</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Document</title>
+    <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
-    <header>
-        <h1>logo</h1>
-        <nav>
-            <ul>
-                <li><a href="/" class="active">홈</a></li>
-                <li>%LOGIN_LINK%</li>
-            </ul>
-        </nav>
-    </header>
-    <section class="hero">
-        <div class="hero-content">
-            <h2></h2>
-            <p></p>
-            <a href="/board" class="btn">생성</a>
-        </div>
-    </section>
-    <section id="start" class="start-section">
-        <h2></h2>
-        <p></p>
-    </section>
-    <footer>
-    </footer>
+    <div class="topnav">
+        <a class="active" href="#home">홈</a>
+        %LOGIN_LINK%
+    </div>
+    <h1>데이터 목록</h1>
+    <div id="submissions">
+        %a%
+    </div>
+    <div id="pagination">
+        %PAGINATION%
+    </div>
 </body>
 </html>
