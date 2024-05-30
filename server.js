@@ -63,6 +63,21 @@ const server = http.createServer((req, res) => {
     res.setHeader('Content-Type', 'text/css; charset=utf-8');
     res.write(css);
     res.end();
+<<<<<<< HEAD
+=======
+  }  else if (req.method === 'GET' && req.url === '/login') {
+    fs.readFile('login.html', 'utf8', (err, data) => {
+      if (err) {
+        console.error('login.html 읽기 오류:', err);
+        res.writeHead(500, { 'Content-Type': 'text/plain' });
+        res.end('Internal Server Error');
+        return;
+      }
+      res.writeHead(200, { 'Content-Type': 'text/html' });
+      res.end(data);
+    }); 
+    //a
+>>>>>>> MemberTest
   }else if (req.url === '/signup'&&req.method==='GET') {
     fs.readFile('signup.html', 'utf8', (err, data) => {
       if (err) {
