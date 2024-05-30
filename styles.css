@@ -75,9 +75,14 @@ header nav ul li a:hover {
   margin-bottom: 20px;
 }
 
-.hero p {
+.hero p.highlight {
+  background: rgba(0, 0, 0, 0.5);
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   font-size: 1.2em;
   margin-bottom: 20px;
+  line-height: 1.8;
 }
 
 .hero .btn {
@@ -114,11 +119,3 @@ header nav ul li a:hover {
   font-size: 1.2em;
 }
 
-/* Footer */
-footer {
-  background: #333;
-  color: #fff;
-  text-align: center;
-  padding: 10px 0;
-  margin-top: 20px;
-}
