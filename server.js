@@ -28,14 +28,17 @@ const server = http.createServer((req, res) => {
 
       // 로그인 상태에 따라 링크 변경
       let loginLink = '';
+      let signupLink ='';
       if (cookies.login && cookies.login === 'true') {
         loginLink = '<a href="/logout">로그아웃</a>';
       } else {
         loginLink = '<a href="/login">로그인</a>';
+        signupLink='<a href="/signup">회원가입</a>';
       }
 
       // HTML에 로그인 링크 삽입
       data = data.replace('%LOGIN_LINK%', loginLink);
+      data =data.replace('%signup_Link%', signupLink);
 
       const query = 'SELECT id, title, date FROM submissions';
       connection.query(query, (err, results) => {
@@ -63,9 +66,13 @@ const server = http.createServer((req, res) => {
     res.setHeader('Content-Type', 'text/css; charset=utf-8');
     res.write(css);
     res.end();
-<<<<<<< HEAD
-=======
-  }  else if (req.method === 'GET' && req.url === '/login') {
+  }else if(req.url==="/login.css"){
+    const LoginCss =fs.readFileSync("login.css");
+    res.statusCode=200;
+    res.setHeader('Content-Type','text/css; charset=utf-8');
+    res.write(LoginCss);
+    res.end(); 
+  }else if (req.method === 'GET' && req.url === '/login') {
     fs.readFile('login.html', 'utf8', (err, data) => {
       if (err) {
         console.error('login.html 읽기 오류:', err);
@@ -77,7 +84,6 @@ const server = http.createServer((req, res) => {
       res.end(data);
     }); 
     //a
->>>>>>> MemberTest
   }else if (req.url === '/signup'&&req.method==='GET') {
     fs.readFile('signup.html', 'utf8', (err, data) => {
       if (err) {
