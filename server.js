@@ -1,29 +1,21 @@
 const http = require('http');
 const fs = require('fs');
 const qs = require('querystring');
-const mysql = require('mysql');
 const bcrypt = require('bcrypt');
-const cookie = require('cookie');
+const connection = require('./db.js');
 
-// MySQL 데이터베이스 연결 설정
-const connection = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "1234",
-  database: "dbtest"
-});
+// 쿠키 파싱 함수
+const parseCookies = (cookie = '') =>
+  cookie
+    .split(';')
+    .map(v => v.split('='))
+    .reduce((acc, [key, value]) => {
+      acc[key.trim()] = decodeURIComponent(value);
+      return acc;
+    }, {});
 
-connection.connect(err => {
-  if (err) {
-    console.error('데이터베이스 연결 오류:', err);
-    return;
-  }
-  console.log('데이터베이스에 연결되었습니다.');
-});
-
-// 서버 생성
 const server = http.createServer((req, res) => {
-  const cookies = cookie.parse(req.headers.cookie || '');
+  const cookies = parseCookies(req.headers.cookie);
 
   if (req.method === 'GET' && req.url === '/') {
     fs.readFile('index.html', 'utf8', (err, data) => {
@@ -71,46 +63,7 @@ const server = http.createServer((req, res) => {
     res.setHeader('Content-Type', 'text/css; charset=utf-8');
     res.write(css);
     res.end();
-  } else if (req.url === '/signup' && req.method === 'GET') {
-    fs.readFile('signup.html', 'utf8', (err, data) => {
-      if (err) {
-        console.error('signup.html 읽기 오류:', err);
-        res.writeHead(500, { 'Content-Type': 'text/plain' });
-        res.end('Internal Server Error');
-        return;
-      }
-      res.writeHead(200, { 'Content-Type': 'text/html' });
-      res.end(data);
-    });
-  } else if (req.url === '/signup' && req.method === 'POST') {
-    let body = '';
-    req.on('data', chunk => {
-      body += chunk.toString();
-    });
-    req.on('end', async () => {
-      const postData = qs.parse(body);
-      const username = postData.username;
-      const password = postData.password;
-
-      if (username && password) {
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const query = 'INSERT INTO site_user (username, password) VALUES (?, ?)';
-        connection.query(query, [username, hashedPassword], (err, results) => {
-          if (err) {
-            console.error('데이터베이스에 사용자 삽입 오류:', err);
-            res.writeHead(500, { 'Content-Type': 'text/plain' });
-            res.end('Internal Server Error');
-            return;
-          }
-          res.writeHead(302, { 'Location': '/login' });
-          res.end();
-        });
-      } else {
-        res.writeHead(400, { 'Content-Type': 'text/plain' });
-        res.end('Bad Request');
-      }
-    });
-  } else if (req.method === 'GET' && req.url === '/login') {
+  }  else if (req.method === 'GET' && req.url === '/login') {
     fs.readFile('login.html', 'utf8', (err, data) => {
       if (err) {
         console.error('login.html 읽기 오류:', err);
@@ -121,7 +74,46 @@ const server = http.createServer((req, res) => {
       res.writeHead(200, { 'Content-Type': 'text/html' });
       res.end(data);
     }); 
-  } else if (req.method === 'POST' && req.url === '/login') {
+  }else if (req.url === '/signup'&&req.method==='GET') {
+    fs.readFile('signup.html', 'utf8', (err, data) => {
+      if (err) {
+        console.error('signup.html 읽기 오류:', err);
+        res.writeHead(500, { 'Content-Type': 'text/plain' });
+        res.end('Internal Server Error');
+        return;
+      }
+      res.writeHead(200, { 'Content-Type': 'text/html' });
+      res.end(data);
+    });
+  }else if (req.method === 'POST' && req.url === '/signup') {
+    let body = '';
+    req.on('data', chunk => {
+        body += chunk.toString();
+    });
+    req.on('end', async () => {
+        const postData = qs.parse(body);
+        const username = postData.username;
+        const password = postData.password;
+        // 입력 데이터 검증
+        if (username && password) {
+          const hashedPassword = await bcrypt.hash(password, 10);
+          const query = 'INSERT INTO site_user (username, password) VALUES (?, ?)';
+          connection.query(query, [username, hashedPassword], (err, results) => {
+            if (err) {
+              console.error('데이터베이스에 사용자 삽입 오류:', err);
+              res.writeHead(500, { 'Content-Type': 'text/plain' });
+              res.end('Internal Server Error');
+              return;
+            }
+            res.writeHead(302, { 'Location': '/login' });
+            res.end();
+          });
+        } else {
+          res.writeHead(400, { 'Content-Type': 'text/plain' });
+          res.end('Bad Request');
+        }
+      });
+    }else if (req.method === 'POST' && req.url === '/login') {
     let body = '';
     req.on('data', chunk => {
       body += chunk.toString();
@@ -211,6 +203,8 @@ const server = http.createServer((req, res) => {
         }
         const links = results.map(submission => `
           <a href="/submission/${submission.id}">${submission.title}</a> - ${submission.date}
+          <a href="/delete/${submission.id}">삭제</a>
+          <a href="/edit/${submission.id}">수정</a>
         `).join('<br>');
 
         data = data.replace('%a%', links);
@@ -319,7 +313,6 @@ const server = http.createServer((req, res) => {
     res.end('Not Found');
   }
 });
-
 server.listen(4000, () => {
   console.log('Server running at http://localhost:4000/');
 });
