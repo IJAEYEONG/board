@@ -114,13 +114,14 @@ const server = http.createServer((req, res) => {
     req.on('end', async () => {
         const postData = qs.parse(body);
         const name = postData.name;
+        const email = postData.email;
         const username = postData.username;
         const password = postData.password;
         // 입력 데이터 검증
-        if (name && username && password) {
+        if (name && email && username && password) {
           const hashedPassword = await bcrypt.hash(password, 10);
-          const query = 'INSERT INTO site_user (name,username, password) VALUES (?,?, ?)';
-          connection.query(query, [name,username, hashedPassword], (err, results) => {
+          const query = 'INSERT INTO site_user (name,email,username, password) VALUES (?,?,?, ?)';
+          connection.query(query, [name,email,username, hashedPassword], (err, results) => {
             if (err) {
               console.error('데이터베이스에 사용자 삽입 오류:', err);
               res.writeHead(500, { 'Content-Type': 'text/plain' });
