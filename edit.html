@@ -4,10 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>수정 페이지</title>
-  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/edit.css">
 </head>
 <body>
-  <h1>수정 페이지</h1>
   <form action="/edit" method="post">
     <input type="hidden" name="id" value="%ID%">
     <label for="title">제목:</label>
@@ -16,6 +15,5 @@
     <textarea id="content" name="content" required>%CONTENT%</textarea><br>
     <button type="submit">수정</button>
   </form>
-  <a href="/">홈으로 돌아가기</a>
 </body>
 </html>

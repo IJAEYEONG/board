@@ -126,6 +126,30 @@ const server = http.createServer((req, res) => {
     res.setHeader('Content-Type', 'text/css; charset=utf-8');
     res.write(css);
     res.end();
+  }else if(req.url ==='/edit.css'){
+    const EditCss = fs.readFileSync("edit.css");
+    res.statusCode=200;
+    res.setHeader('Content-Type','text/css; charset=utf-8');
+    res.write(EditCss);
+    res.end();
+  }else if(req.url==="/board.css"){
+    const BoardCss = fs.readFileSync("board.css");
+    res.statusCode=200;
+    res.setHeader('Content-Type','text/css; charset=utf-8');
+    res.write(BoardCss);
+    res.end();
+  }else if(req.url==="/submission.css"){
+    const Details = fs.readFileSync("submission.css");
+    res.statusCode=200;
+    res.setHeader("Content-Type","text/css; charset=utf-8");
+    res.write(Details);
+    res.end();
+  }else if(req.url ==="/signup.css"){
+    const signup =fs.readFileSync("signup.css");
+    res.statusCode=200;
+    res.setHeader("Contnet-Type","text/css; charset=utf-8");
+    res.write(signup);
+    res.end();
   } else if (req.url === "/login.css") {
     const LoginCss = fs.readFileSync("login.css");
     res.statusCode = 200;
