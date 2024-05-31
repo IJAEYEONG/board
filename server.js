@@ -336,6 +336,7 @@
       res.writeHead(404, { 'Content-Type': 'text/plain' });
       res.end('Not Found');
     }
+    console.log(session)
   });
   server.listen(4000, () => {
     console.log('Server running at http://localhost:4000/');
