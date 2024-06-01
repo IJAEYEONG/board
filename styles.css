@@ -65,6 +65,7 @@ header nav ul li a:hover {
   color: white;
   text-align: center;
   padding: 20px;
+  overflow: hidden;  /* Ensure content doesn't overflow the hero section */
 }
 
 .hero .container {
@@ -78,6 +79,8 @@ header nav ul li a:hover {
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   width: 100%;
+  box-sizing: border-box;  /* Include padding and border in the element's total width and height */
+  overflow: auto;  /* Ensure inner content can be scrolled if it overflows */
 }
 
 .post {
@@ -92,6 +95,7 @@ header nav ul li a:hover {
   font-size: 1.5em;
   margin: 0 0 10px;
   color: #fff;
+  text-decoration: none;
 }
 
 .post-date {

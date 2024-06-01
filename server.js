@@ -4,11 +4,9 @@ const qs = require('querystring');
 const bcrypt = require('bcrypt');
 const connection = require('./db.js');
 const crypto = require('crypto');
-
-// 세션 생성
 function createSession(sessionData, callback) {
   const sessionId = crypto.randomBytes(16).toString('hex');
-  const expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24); // 1 day
+  const expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24);
 
   const query = 'INSERT INTO sessions (session_id, session_data, expires_at) VALUES (?, ?, ?)';
   connection.query(query, [sessionId, JSON.stringify(sessionData), expiresAt], (err) => {
@@ -19,7 +17,7 @@ function createSession(sessionData, callback) {
   });
 }
 
-// 세션 읽기
+
 function readSession(sessionId, callback) {
   const query = 'SELECT session_data FROM sessions WHERE session_id = ? AND expires_at > NOW()';
   connection.query(query, [sessionId], (err, results) => {
@@ -58,7 +56,6 @@ function deleteSession(sessionId, callback) {
   });
 }
 
-// 쿠키 파싱 함수
 const parseCookies = (cookie = '') =>
   cookie.split(';').map(v => v.split('=')).reduce((acc, [key, value]) => {
     acc[key.trim()] = decodeURIComponent(value);
@@ -109,7 +106,7 @@ const server = http.createServer((req, res) => {
 
           const links = results.map(submission => `
           <div class="post">
-            <p class="post-title">${submission.title}</p>
+            <a href="/submission/${submission.id}" class="post-title">${submission.title}</a>
             <p class="post-date">${submission.date}</p>
             <div class="post-actions">
               <a href="/delete/${submission.id}" class="btn small">삭제</a>
@@ -117,7 +114,7 @@ const server = http.createServer((req, res) => {
             </div>
           </div>
         `).join('');
-        data = data.replace('%a%', links);
+      data = data.replace('%a%', links);
 
           res.writeHead(200, { 'Content-Type': 'text/html' });
           res.end(data);
