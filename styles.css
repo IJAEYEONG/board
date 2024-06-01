@@ -92,6 +92,8 @@ header nav ul li a:hover {
   text-decoration: none;
   border-radius: 5px;
   font-size: 1.1em;
+  display: inline-block;
+  margin-top: 20px;
 }
 
 .hero .btn:hover {
@@ -118,4 +120,3 @@ header nav ul li a:hover {
 .start-section p {
   font-size: 1.2em;
 }
-
