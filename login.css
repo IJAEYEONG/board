@@ -34,13 +34,14 @@ body {
   margin: 10px 0;
   border: none;
   border-radius: 5px;
-  background-color: #5cb85c;
+  background-color: #333;
   color: white;
   font-size: 16px;
   cursor: pointer;
 }
+/* #333*/
 .container button:hover {
-  background-color: #4cae4c;
+  background-color: #0779e4;
 }
 .container .signup-button {
   background-color: #0275d8;

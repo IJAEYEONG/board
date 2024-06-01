@@ -58,43 +58,78 @@ header nav ul li a:hover {
 /* Hero Section */
 .hero {
   background: url('hero-bg.jpg') no-repeat center center/cover;
-  height: 500px;
+  min-height: 500px;
   display: flex;
   align-items: center;
+  justify-content: center;
   color: white;
   text-align: center;
+  padding: 20px;
+  overflow: hidden;  /* Ensure content doesn't overflow the hero section */
 }
 
 .hero .container {
-  max-width: 600px;
+  max-width: 800px;
   margin: auto;
 }
 
-.hero h2 {
-  font-size: 2.5em;
-  margin-bottom: 20px;
-}
-
-.hero p.highlight {
-  background: rgba(0, 0, 0, 0.5);
-  padding: 20px;
+.hero-content {
+  background: rgba(0, 0, 0, 0.7);
+  padding: 40px;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  font-size: 1.2em;
-  margin-bottom: 20px;
-  line-height: 1.8;
+  width: 100%;
+  box-sizing: border-box;  /* Include padding and border in the element's total width and height */
+  overflow: auto;  /* Ensure inner content can be scrolled if it overflows */
 }
 
-.hero .btn {
+.post {
+  background: rgba(255, 255, 255, 0.1);
+  margin-bottom: 20px;
+  padding: 20px;
+  border-radius: 5px;
+  text-align: left;
+}
+
+.post-title {
+  font-size: 1.5em;
+  margin: 0 0 10px;
+  color: #fff;
+  text-decoration: none;
+}
+
+.post-date {
+  font-size: 0.9em;
+  color: #ccc;
+  margin: 0 0 10px;
+}
+
+.post-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.post-actions .btn {
+  margin-left: 10px;
+}
+
+.btn {
   background: #0779e4;
   color: #fff;
   padding: 10px 20px;
   text-decoration: none;
   border-radius: 5px;
   font-size: 1.1em;
+  display: inline-block;
+  margin-top: 20px;
 }
 
-.hero .btn:hover {
+.btn.small {
+  padding: 5px 10px;
+  font-size: 0.9em;
+}
+
+.btn:hover {
   background: #0056b3;
 }
 
@@ -118,4 +153,3 @@ header nav ul li a:hover {
 .start-section p {
   font-size: 1.2em;
 }
-
