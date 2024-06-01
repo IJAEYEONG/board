@@ -108,12 +108,16 @@ const server = http.createServer((req, res) => {
           }
 
           const links = results.map(submission => `
-            <a href="/submission/${submission.id}">${submission.title}</a> - ${submission.date}
-            <a href="/delete/${submission.id}">삭제</a>
-            <a href="/edit/${submission.id}">수정</a>
-          `).join('<br>');
-
-          data = data.replace('%a%', links);
+          <div class="post">
+            <p class="post-title">${submission.title}</p>
+            <p class="post-date">${submission.date}</p>
+            <div class="post-actions">
+              <a href="/delete/${submission.id}" class="btn small">삭제</a>
+              <a href="/edit/${submission.id}" class="btn small">수정</a>
+            </div>
+          </div>
+        `).join('');
+        data = data.replace('%a%', links);
 
           res.writeHead(200, { 'Content-Type': 'text/html' });
           res.end(data);
