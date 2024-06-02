@@ -12,14 +12,12 @@ function createSession(sessionData, callback) {
   console.log(typeof(sessionData))
   console.log(sessionData)
   const query = 'INSERT INTO sessions (session_id, session_data, expires_at) VALUES (?, ?, ?)';
-  connection.query(query, [sessionId, sessionData, expiresAt], (err) => {
+  connection.query(query, [sessionId, JSON.stringify(sessionData), expiresAt], (err) => {
     if (err) {
       return callback(err);
     }
     callback(null, sessionId);
   });
-  console.log(typeof(sessionData))
-  console.log(sessionData)
 }
 function readSession(sessionId, callback) {
   const query = 'SELECT session_data FROM sessions WHERE session_id = ? AND expires_at > NOW()';
