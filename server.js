@@ -4,20 +4,23 @@ const qs = require('querystring');
 const bcrypt = require('bcrypt');
 const connection = require('./db.js');
 const crypto = require('crypto');
+
+
 function createSession(sessionData, callback) {
   const sessionId = crypto.randomBytes(16).toString('hex');
-  const expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24);
-
+  const expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24); // 1 day
+  console.log(typeof(sessionData))
+  console.log(sessionData)
   const query = 'INSERT INTO sessions (session_id, session_data, expires_at) VALUES (?, ?, ?)';
-  connection.query(query, [sessionId, JSON.stringify(sessionData), expiresAt], (err) => {
+  connection.query(query, [sessionId, sessionData, expiresAt], (err) => {
     if (err) {
       return callback(err);
     }
     callback(null, sessionId);
   });
+  console.log(typeof(sessionData))
+  console.log(sessionData)
 }
-
-
 function readSession(sessionId, callback) {
   const query = 'SELECT session_data FROM sessions WHERE session_id = ? AND expires_at > NOW()';
   connection.query(query, [sessionId], (err, results) => {
@@ -31,8 +34,6 @@ function readSession(sessionId, callback) {
     callback(null, sessionData);
   });
 }
-
-// 세션 갱신
 function updateSession(sessionId, sessionData, callback) {
   const query = 'UPDATE sessions SET session_data = ?, expires_at = ? WHERE session_id = ?';
   const expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24); // 1 day
@@ -44,8 +45,6 @@ function updateSession(sessionId, sessionData, callback) {
     callback(null);
   });
 }
-
-// 세션 삭제
 function deleteSession(sessionId, callback) {
   const query = 'DELETE FROM sessions WHERE session_id = ?';
   connection.query(query, [sessionId], (err) => {
@@ -55,7 +54,6 @@ function deleteSession(sessionId, callback) {
     callback(null);
   });
 }
-
 const parseCookies = (cookie = '') =>
   cookie.split(';').map(v => v.split('=')).reduce((acc, [key, value]) => {
     acc[key.trim()] = decodeURIComponent(value);
@@ -95,7 +93,7 @@ const server = http.createServer((req, res) => {
         data = data.replace('%LOGIN_LINK%', loginLink);
         data = data.replace('%signup_Link%', signupLink);
 
-        const query = 'SELECT id, title, date FROM submissions';
+        const query = 'SELECT id, title, date FROM submissions ORDER BY date DESC LIMIT 3';
         connection.query(query, (err, results) => {
           if (err) {
             console.error('데이터베이스에서 제출물 조회 오류:', err);
@@ -114,7 +112,7 @@ const server = http.createServer((req, res) => {
             </div>
           </div>
         `).join('');
-      data = data.replace('%a%', links);
+data = data.replace('%a%', links);
 
           res.writeHead(200, { 'Content-Type': 'text/html' });
           res.end(data);
