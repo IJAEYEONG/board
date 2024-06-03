@@ -21,7 +21,8 @@ header {
   border-bottom: #0779e4 3px solid;
 }
 
-header h1 {
+header  h1 {
+  color: white;
   float: left;
   margin: 0;
 }
@@ -54,10 +55,7 @@ header nav ul li a.active,
 header nav ul li a:hover {
   background: #0779e4;
 }
-
-/* Hero Section */
 .hero {
-  background: url('hero-bg.jpg') no-repeat center center/cover;
   min-height: 500px;
   display: flex;
   align-items: center;
@@ -65,7 +63,7 @@ header nav ul li a:hover {
   color: white;
   text-align: center;
   padding: 20px;
-  overflow: hidden;  /* Ensure content doesn't overflow the hero section */
+  overflow: hidden; 
 }
 
 .hero .container {
@@ -112,7 +110,24 @@ header nav ul li a:hover {
 .post-actions .btn {
   margin-left: 10px;
 }
-
+.list-content{
+  display: flex;
+  justify-content: flex-end;
+}
+.list-btn{
+  background: #0779e4;
+  color: #fff;
+  padding: 5px 20px;
+  text-decoration: none;
+  border-radius: 5px;
+  font-size: 1.1em;
+  display: inline-block;
+  margin-top: 20px;
+  margin-bottom: 5px;
+}
+.list-btn:hover{
+  background: #0056b3;
+}
 .btn {
   background: #0779e4;
   color: #fff;
