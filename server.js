@@ -3,111 +3,20 @@ const http = require("http");
 const fs = require("fs");
 const qs = require("querystring");
 const bcrypt = require("bcrypt");
-const connection = require("./db.js");
+const connection = require("./module/db.js");
 const crypto = require("crypto");
-
-// *세션 생성해주는 함수
-function createSession(sessionData, callback) {
-  const sessionId = crypto.randomBytes(16).toString("hex");
-  //세션 id를 16바이트의 랜덤 스트링을 hex형태로 바꿈
-  const expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24);
-  //세션 만료시간 부분 현재시간+24한것을 만듬
-  console.log(typeof sessionData);
-  console.log(sessionData);
-  const query =
-    "INSERT INTO sessions (session_id, session_data, expires_at) VALUES (?, ?, ?)";
-  //session테이블에 id,data,시간을 삽입하는 쿼리
-  connection.query(
-    query,
-    [sessionId, JSON.stringify(sessionData), expiresAt],
-    (err) => {
-      if (err) {
-        return callback(err);
-      }
-      callback(null, sessionId);
-    }
-  );
-  //위에있는 쿼리문을 실행하고 id, 데이터 ,시간을 받아서 쿼리에 저장 오류가없으면 null과 id를 콜백해서 저장 후 함수 종료.
-}
-
-// *query에서 조건에 맞는 데이터를 가져와 js 객체 형태로 바꿔서
-function readSession(sessionId, callback) {
-  const query =
-    "SELECT session_data FROM sessions WHERE session_id = ? AND expires_at > NOW()"; //id와 같은 데이터와 시간을 선택
-  connection.query(query, [sessionId], (err, results) => {
-    if (err) {
-      //만약 에러가 발생했다면 콜백으로 에러를 말해주고 return 으로 함수종료
-      return callback(err);
-    }
-    if (results.length === 0) {
-      //만약 results안에 값이 없다면 값이없다고null반환하고 함수종료
-      return callback(null, null);
-    }
-    const sessionData = JSON.parse(results[0].session_data);
-    //세션데이터 첫번째를 js객체형태로 바꿔서 sessionData에 저장
-    console.log(sessionData);
-    callback(null, sessionData);
-    //에러가 없으면 null과 데이터를 반환해서 저장
-  }); //
-}
-
-// *세션 업데이트 부분
-function updateSession(sessionId, sessionData, callback) {
-  const query =
-    "UPDATE sessions SET session_data = ?, expires_at = ? WHERE session_id = ?";
-  //세션 테이블을 업데이트한다고 선언 id와같은 세션 데이터와 시간을 업데이트하는 부분
-  const expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24);
-  // 시간만료시간은 현재시간+24
-  connection.query(
-    query,
-    [JSON.stringify(sessionData), expiresAt, sessionId],
-    (err) => {
-      // 위에 쿼리문을 실행하고 받은 데이터를 json화 시키고 시간, id를 세션 테이블에 저장
-      if (err) {
-        // 오류가 났으면 콜백으로 에러를 반환하고 종료
-        return callback(err);
-      }
-      callback(null);
-      // 오류가없으면 콜백으로 null을 반환시켜준다.
-    }
-  );
-}
-
-//*세션 삭제 부분
-function deleteSession(sessionId, callback) {
-  const query = "DELETE FROM sessions WHERE session_id = ?";
-  // id에 맞는 세션 테이블 찾는 부분
-  connection.query(query, [sessionId], (err) => {
-    // 쿼리문을 실행해서 id를 삭제한후 저장.
-
-    if (err) {
-      return callback(err);
-    }
-    //오류 나면 콜백으로 오류 보내주고 return으로 함수 종류
-    callback(null);
-  });
-  //오류없으면 null반환
-}
-// *문자열의 쿠키를 객체 형식으로 바꾸는 함수
-const parseCookies = (cookie = "") =>
-  //빈 문자열로 설정.
-  cookie
-    .split(";")
-    //쿠키 문자열을 세미콜론 기준으로 분할해서 배열로 넣음
-    .map((v) => v.split("="))
-    //위에서 분할된 쿠키 항목을 다시 =를 기준으로 키와 값으로 나누는 부분
-    .reduce((acc, [key, value]) => {
-      //acc는 누적값을 의미 
-      acc[key.trim()] = decodeURIComponent(value);
-      //key.trim()은 키에서 공백을 제거 하고 decodeURIComponent(value);이 url 인코딩된 경우 디코딩 해버림
-      return acc;
-      //누적된 값을 종료
-    }, {});
-//reduce 메서드를 사용하여 키-값 쌍 배열을 순회하며 
+const createSession =require("./module/CreateSession.js")
+const readSession=require('./module/readSession.js')
+const updateSession =require('./module/updateSession.js')
+const deleteSession =require('./module/deleteSession.js')
+const parseCookies=require('./module/parseCookies.js')
+//acc에 누적된값을 return에 종료하고 {}에 넣어 객체로 만든다.
 const server = http.createServer((req, res) => {
+  //req,res 매개변수를 만들어 http모듈로 서버 생성
   const cookies = parseCookies(req.headers.cookie);
+  //함수 parsecookies를 실행 헤더에 쿠키 요청
   const sessionId = cookies.sessionId;
-  //
+  //쿠키안에있는 세션id를  seesionId에 넣음
   if (req.method === "GET" && req.url === "/") {
     readSession(sessionId, (err, sessionData) => {
       if (err) {
@@ -116,34 +25,41 @@ const server = http.createServer((req, res) => {
         res.end("Internal Server Error");
         return;
       }
-
+      //readSession함수 실행 세션 id와 , 콜백으로err,세션데이터를 받음 오류가나면 종료
       fs.readFile("index.html", "utf8", (err, data) => {
+        //오류와 데이터를 콜백으로 받아 밑에서 읽은 데이터를 받아서 나타냄
         if (err) {
           console.error("index.html 읽기 오류:", err);
           res.writeHead(500, { "Content-Type": "text/plain" });
           res.end("Internal Server Error");
           return;
         }
-
+        //fs모듈로 index.html을 읽는 부분
         let loginLink = "";
         let signupLink = "";
+        //로그인, 회원가입 링크를 나타내는 변수 초기화.
         if (sessionData && sessionData.loggedIn) {
           loginLink = '<a href="/logout">로그아웃</a>';
         } else {
           loginLink = '<a href="/login">로그인</a>';
           signupLink = '<a href="/signup">회원가입</a>';
         }
+        //만약 세션데이터와 세션데이터.로그인이 되어있으면 로그아웃이라고 나타내고 그게아니라면 로그인,회원가입이라고 나타내라.
         data = data.replace("%LOGIN_LINK%", loginLink);
         data = data.replace("%signup_Link%", signupLink);
+        //data 문자열에서 로그인링크와 회원가입 링크 변수의 값으로 대체.
         const query =
           "SELECT id, title, date FROM submissions ORDER BY date DESC LIMIT 3";
+        //submissions 테이블에서 id,title,date 를 날짜를 기준으로 내림차순으로 3개까지 제한을 둔다.
         connection.query(query, (err, results) => {
+          //results는 쿼리실행문의 결과가 담겨져있다 그리고 SELECT의 결과는 항상 배열로 반환.
           if (err) {
             console.error("데이터베이스에서 제출물 조회 오류:", err);
             res.writeHead(500, { "Content-Type": "text/plain" });
             res.end("Internal Server Error");
             return;
           }
+          // connection.query 메서드를 이용해서 query를 실행 실행중 에러 발생하면 500 발생하고 에러 메세지 응답으로 보내고 return으로 함수종료.
           const links = results
             .map(
               (submission) => `
@@ -162,6 +78,7 @@ const server = http.createServer((req, res) => {
           res.writeHead(200, { "Content-Type": "text/html" });
           res.end(data);
         });
+        //result 배열의 각 항목을 map메서드를 사용하여 html로 변환,join메서드를 활용해서 배열을 하나의 문자열로 결합 .
       });
     });
   } else if (req.method === "GET" && req.url === "/BoardList") {
@@ -172,6 +89,7 @@ const server = http.createServer((req, res) => {
         res.end("Internal Server Error");
         return;
       }
+      //BoardList.html을 읽는 부분 에러가 발생하면 return으로 함수 종료.
       const query = "SELECT id, title, date FROM submissions";
       connection.query(query, (err, results) => {
         if (err) {
@@ -180,6 +98,7 @@ const server = http.createServer((req, res) => {
           res.end("Internal Server Error");
           return;
         }
+        //submissiions 테이블에서 id,title,date를 찾아서 선택함 만약 에러가 나오면 return으로 함수종료.
         const links = results
           .map(
             (submission) => `
@@ -189,9 +108,9 @@ const server = http.createServer((req, res) => {
         `
           )
           .join("<br>");
-
+        //위에서 나온 쿼리문을 실행한 결과를 받은 results는 배열로 반환하기떄문에 map으로 html형태로 쪼갠다? 그리고 그 배열을 join으로 결합 시킴.
         data = data.replace("%a%", links);
-
+        //위에서 map으로 쪼개고 join으로 결합시킨걸 links에 들어가있기때문에 그 replace로 html에 나타나게 한다.
         res.writeHead(200, { "Content-Type": "text/html" });
         res.end(data);
       });
@@ -244,6 +163,7 @@ const server = http.createServer((req, res) => {
       res.end(data);
     });
   } else if (req.method === "GET" && req.url === "/signup") {
+    //get이고 /signup일떄 실행되고 signup.html을 읽는다
     fs.readFile("signup.html", "utf8", (err, data) => {
       if (err) {
         console.error("signup.html 읽기 오류:", err);
@@ -251,25 +171,31 @@ const server = http.createServer((req, res) => {
         res.end("Internal Server Error");
         return;
       }
+      //에러가 생기면 console에 에러가 나오고err을 콜백한고 함수종료.
       res.writeHead(200, { "Content-Type": "text/html" });
       res.end(data);
     });
+    // 에러가 나지 않았으면 상태코드 200을 나오고 text/html을 읽게한뒤 res.end로 data를 응답으로 보내준다.
   } else if (req.method === "POST" && req.url === "/signup") {
+    //POST이고 /signup일때 실행이되고
     let body = "";
     req.on("data", (chunk) => {
       body += chunk.toString();
     });
+    //body라는 변수로 초기화 시킨뒤.data라는 이벤트를 on으로 연결해서 post로 보낸 데이터를 crunk에 저장하고 crunk가  가지고 있는 정보나 값들을 문자열로 만들어 리턴해 body에 넣는부분
     req.on("end", async () => {
       const postData = qs.parse(body);
       const name = postData.name;
       const Email = postData.Email;
       const username = postData.username;
       const password = postData.password;
-
+      //위에서 body안에 넣은 데이터들 queryString.parse 해서 가져온다, 위에서 async를 선언해 비동기방식으로 했다고 정의했다.
       if (name && Email && username && password) {
         const hashedPassword = await bcrypt.hash(password, 10);
+        //name, Email, username,password 가 다들어왔으면 잠시 async함수를 정지시키고 패스워드를 10개형태로 암호화시킨다.
         const query =
           "INSERT INTO site_user (name, Email, username, password) VALUES (?, ?, ?, ?)";
+        //site_user이라는 테이블에 4개의 값을 INSERT한다라는 쿼리문.
         connection.query(
           query,
           [name, Email, username, hashedPassword],
@@ -283,22 +209,24 @@ const server = http.createServer((req, res) => {
             res.writeHead(302, { Location: "/login" });
             res.end();
           }
+          //connection.query로 query문을 실행시켜 4개의값을 테이블에 저장한다 성공했으면 302상태코드를 말하고 /login 화면으로 돌아간다.
         );
       } else {
         res.writeHead(400, { "Content-Type": "text/plain" });
         res.end("Bad Request");
       }
-    });
+    }); //그게아니라면 400상태코드를 내뱉고 html에서 Bad Request라고 응답한다.
   } else if (req.method === "POST" && req.url === "/login") {
     let body = "";
     req.on("data", (chunk) => {
       body += chunk.toString();
     });
+    //body라는 변수로 초기화 시킨뒤.data라는 이벤트를 on으로 연결해서 post로 보낸 데이터를 crunk에 저장하고 crunk가  가지고 있는 정보나 값들을 문자열로 만들어 리턴해 body에 넣는부분
     req.on("end", () => {
       const postData = qs.parse(body);
       const username = postData.username;
       const password = postData.password;
-
+      //postData라는 변수를 만들어 body에 저장해놓은 데이터를 queryString.parse해서 postData에 넣는다
       if (username && password) {
         const query = "SELECT * FROM site_user WHERE username = ?";
         connection.query(query, [username], async (err, results) => {
@@ -308,16 +236,19 @@ const server = http.createServer((req, res) => {
             res.end("Internal Server Error");
             return;
           }
-
+          //만약 username과 password가 들어왔다면 실행하는 부분이고 site_user테이블안에있는 username을 기준으로 찾아본다.
           if (results.length > 0) {
             const user = results[0];
+            // selete문은 항상 배열로 봔한하는데 그 결과값이 results안에 들어가있으니까 그 안에있는 첫번째 해당하는것을 user변수에 담는다.
             try {
               const passwordMatch = await bcrypt.compare(
                 password,
                 user.password
               );
+              //사용자가 입력한 비밀번호와 db에 저장된 비밀번호를 비교하는 부분.
               if (passwordMatch) {
                 const sessionData = { loggedIn: true, userId: user.id };
+                //만약 비밀번호를 비교한게 맞다면 세션 데이터를 만들어준다.
                 createSession(sessionData, (err, sessionId) => {
                   if (err) {
                     console.error("세션 생성 오류:", err);
@@ -325,6 +256,7 @@ const server = http.createServer((req, res) => {
                     res.end("Internal Server Error");
                     return;
                   }
+                  //createSession함수로 세션데이터를 가져오고 id와 세션 만료시간을 생성해 둔다.
                   res.setHeader(
                     "Set-Cookie",
                     `sessionId=${sessionId}; HttpOnly`
@@ -332,7 +264,7 @@ const server = http.createServer((req, res) => {
                   //
                   res.writeHead(302, { Location: "/" });
                   res.end();
-                });
+                });// 오류가안났다면 상태코드 302로 내보내고 /로 돌아가게 한다.
               } else {
                 res.writeHead(401, { "Content-Type": "text/plain" });
                 res.end("Unauthorized");
@@ -356,56 +288,59 @@ const server = http.createServer((req, res) => {
     let body = "";
     req.on("data", (chunk) => {
       body += chunk.toString();
-    });
+    });// post이고/submit이면 변수 body를 초기화하고 data이벤트를 사용해서 들어온 데이터를 읽는다.
     req.on("end", () => {
       const postData = qs.parse(body);
+      // postData라는 변수를 만들어 body에 들어있는 데이터를 queryString.parse 해서 넣어둔다.
       const title = postData.title;
       const content = postData.content;
       const date = new Date().toLocaleString();
+      //title,content,data를 body에서 가져온다.
       const query =
         "INSERT INTO submissions (title, content, date) VALUES (?, ?, ?)";
+        //submissions 테이블에 title,content,date값을 INSERT한다.
       connection.query(query, [title, content, date], (err, results) => {
+        //connection.query 메서드를 사용해서 query를 실행 title,content,date를 넣는다.
         if (err) {
           console.error("데이터베이스에 제출물 삽입 오류:", err);
           res.writeHead(500, { "Content-Type": "text/plain" });
           res.end("Internal Server Error");
           return;
         }
+        //만약 err이 났다면 return으로 함수종료.
         res.writeHead(302, { Location: "/" });
         res.end();
-      });
+      });// 오류가 나지않았으면 302상태코드를 주고 /를 반환
     });
   } else if (req.method === "GET" && req.url === "/board") {
     fs.readFile("board.html", "utf8", (err, data) => {
+      //GET이고 url이고 /board이면 board.html을 읽는다 
       if (err) {
         console.error("board.html 읽기 오류:", err);
         res.writeHead(500, { "Content-Type": "text/plain" });
         res.end("Internal Server Error");
         return;
       }
+      //만약 err이면 console에 오류를 나타내고 return으로 함수 종료시킨다.
       const query = "SELECT id, title, date FROM submissions";
+      //submissions 테이블에서 id,title,date를 찾는다.
       connection.query(query, (err, results) => {
+        //connection.query메서드로 qeury를 실행하고 콜백으로 err,result를 받는다.
         if (err) {
           console.error("데이터베이스에서 제출물 조회 오류:", err);
           res.writeHead(500, { "Content-Type": "text/plain" });
           res.end("Internal Server Error");
           return;
         }
-        const links = results
-          .map(
-            (submission) => `
-          <a href="/submission/${submission.id}">${submission.title}</a> - ${submission.date}
-          <a href="/delete/${submission.id}">삭제</a>
-          <a href="/edit/${submission.id}">수정</a>
-        `
-          )
-          .join("<br>");
+        //만약 에러가 났다면 console에 오류가 뜨고 상태코드 500이 뜬고 return으로 함수가종료.
         res.writeHead(200, { "Content-Type": "text/html" });
         res.end(data);
       });
+      //별다른 오류가 없다면 상태코드 200을 내고 html에 data를 반환하고 종료.
     });
   } else if (req.method === "GET" && req.url.startsWith("/submission/")) {
     const id = req.url.split("/").pop();
+    //pop메서드는 배열에서 마지막 요소를 제거하는 메서드.
     const query = "SELECT * FROM submissions WHERE id = ?";
     connection.query(query, [id], (err, results) => {
       if (err) {
@@ -525,8 +460,8 @@ const server = http.createServer((req, res) => {
     res.writeHead(404, { "Content-Type": "text/plain" });
     res.end("Not Found");
   }
+  console.log(req.url.startsWith);
 });
-
 server.listen(8080, () => {
   console.log("서버가 http://localhost:8080 에서 실행 중입니다.");
 });
