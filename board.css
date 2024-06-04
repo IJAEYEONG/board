@@ -39,6 +39,11 @@ button {
 button:hover {
   background-color: #45a049;
 }
+#content{
+    width: calc(100% - 22px);
+    height: 20em;
+    resize: none; 
+}
 hr {
   margin: 40px 0;
   border: 0;
