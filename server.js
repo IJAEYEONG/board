@@ -11,6 +11,7 @@ const updateSession =require('./module/updateSession.js')
 const deleteSession =require('./module/deleteSession.js')
 const parseCookies=require('./module/parseCookies.js')
 const linksModule = require('./module/fs.js');
+const ResdFileSync =require('./module/ResdFileSync.js')
 const server = http.createServer((req, res) => {
   const cookies = parseCookies(req.headers.cookie);
   const sessionId = cookies.sessionId;
@@ -90,9 +91,11 @@ const server = http.createServer((req, res) => {
       });
     });
   } else if (req.url === "/styles.css") {
-    const css = fs.readFileSync("styles.css");
+    // const css = fs.readFileSync("styles.css");
+    const css =ResdFileSync.ResdFileSync("styles.css")
     res.statusCode = 200;
     res.setHeader("Content-Type", "text/css; charset=utf-8");
+    console.log(css)
     res.write(css);
     res.end();
   } else if (req.url === "/edit.css") {
@@ -101,6 +104,7 @@ const server = http.createServer((req, res) => {
     res.setHeader("Content-Type", "text/css; charset=utf-8");
     res.write(EditCss);
     res.end();
+    a
   } else if (req.url === "/board.css") {
     const BoardCss = fs.readFileSync("board.css");
     res.statusCode = 200;
