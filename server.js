@@ -10,13 +10,10 @@ const readSession=require('./module/readSession.js')
 const updateSession =require('./module/updateSession.js')
 const deleteSession =require('./module/deleteSession.js')
 const parseCookies=require('./module/parseCookies.js')
-//acc에 누적된값을 return에 종료하고 {}에 넣어 객체로 만든다.
+const linksModule = require('./module/fs.js');
 const server = http.createServer((req, res) => {
-  //req,res 매개변수를 만들어 http모듈로 서버 생성
   const cookies = parseCookies(req.headers.cookie);
-  //함수 parsecookies를 실행 헤더에 쿠키 요청
   const sessionId = cookies.sessionId;
-  //쿠키안에있는 세션id를  seesionId에 넣음
   if (req.method === "GET" && req.url === "/") {
     readSession(sessionId, (err, sessionData) => {
       if (err) {
@@ -25,60 +22,37 @@ const server = http.createServer((req, res) => {
         res.end("Internal Server Error");
         return;
       }
-      //readSession함수 실행 세션 id와 , 콜백으로err,세션데이터를 받음 오류가나면 종료
       fs.readFile("index.html", "utf8", (err, data) => {
-        //오류와 데이터를 콜백으로 받아 밑에서 읽은 데이터를 받아서 나타냄
         if (err) {
           console.error("index.html 읽기 오류:", err);
           res.writeHead(500, { "Content-Type": "text/plain" });
           res.end("Internal Server Error");
           return;
         }
-        //fs모듈로 index.html을 읽는 부분
         let loginLink = "";
         let signupLink = "";
-        //로그인, 회원가입 링크를 나타내는 변수 초기화.
         if (sessionData && sessionData.loggedIn) {
           loginLink = '<a href="/logout">로그아웃</a>';
         } else {
           loginLink = '<a href="/login">로그인</a>';
           signupLink = '<a href="/signup">회원가입</a>';
         }
-        //만약 세션데이터와 세션데이터.로그인이 되어있으면 로그아웃이라고 나타내고 그게아니라면 로그인,회원가입이라고 나타내라.
         data = data.replace("%LOGIN_LINK%", loginLink);
         data = data.replace("%signup_Link%", signupLink);
-        //data 문자열에서 로그인링크와 회원가입 링크 변수의 값으로 대체.
         const query =
           "SELECT id, title, date FROM submissions ORDER BY date DESC LIMIT 3";
-        //submissions 테이블에서 id,title,date 를 날짜를 기준으로 내림차순으로 3개까지 제한을 둔다.
         connection.query(query, (err, results) => {
-          //results는 쿼리실행문의 결과가 담겨져있다 그리고 SELECT의 결과는 항상 배열로 반환.
           if (err) {
             console.error("데이터베이스에서 제출물 조회 오류:", err);
             res.writeHead(500, { "Content-Type": "text/plain" });
             res.end("Internal Server Error");
             return;
           }
-          // connection.query 메서드를 이용해서 query를 실행 실행중 에러 발생하면 500 발생하고 에러 메세지 응답으로 보내고 return으로 함수종료.
-          const links = results
-            .map(
-              (submission) => `
-          <div class="post">
-            <a href="/submission/${submission.id}" class="post-title">${submission.title}</a>
-            <p class="post-date">${submission.date}</p>
-            <div class="post-actions">
-              <a href="/delete/${submission.id}" class="btn small">삭제</a>
-              <a href="/edit/${submission.id}" class="btn small">수정</a>
-            </div>
-          </div>
-        `
-            )
-            .join("");
-          data = data.replace("%a%", links);
+          const linksHTML = linksModule.generateLinks(results);
+          data = data.replace("%a%", linksHTML);
           res.writeHead(200, { "Content-Type": "text/html" });
           res.end(data);
         });
-        //result 배열의 각 항목을 map메서드를 사용하여 html로 변환,join메서드를 활용해서 배열을 하나의 문자열로 결합 .
       });
     });
   } else if (req.method === "GET" && req.url === "/BoardList") {
@@ -462,6 +436,6 @@ const server = http.createServer((req, res) => {
   }
   console.log(req.url.startsWith);
 });
-server.listen(8080, () => {
-  console.log("서버가 http://localhost:8080 에서 실행 중입니다.");
+server.listen(7070, () => {
+  console.log("서버가 http://localhost:7070 에서 실행 중입니다.");
 });
