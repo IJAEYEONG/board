@@ -1,0 +1,196 @@
+/* General Styles */
+body {
+  font-family: 'Helvetica Neue', sans-serif;
+  margin: 0;
+  padding: 0;
+  color: #444;
+  line-height: 1.6;
+}
+
+.container {
+  width: 80%;
+  margin: auto;
+  overflow: hidden;
+}
+
+header {
+  background: #333;
+  color: #fff;
+  padding-top: 30px;
+  min-height: 70px;
+  border-bottom: #0779e4 3px solid;
+}
+
+header  h1 {
+  color: white;
+  float: left;
+  margin: 0;
+}
+
+header nav {
+  float: right;
+  margin-top: 10px;
+}
+
+header nav ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+header nav ul li {
+  display: inline;
+  margin-left: 5px;
+}
+
+header nav ul li a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: bold;
+  padding: 5px 20px;
+  border-radius: 5px;
+}
+
+header nav ul li a.active,
+header nav ul li a:hover {
+  background: #0779e4;
+}
+.hero {
+  min-height: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  text-align: center;
+  padding: 20px;
+  overflow: hidden; 
+}
+
+.hero .container {
+  max-width: 800px;
+  margin: auto;
+}
+
+.hero-content {
+  background: rgba(0, 0, 0, 0.7);
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  box-sizing: border-box;  /* Include padding and border in the element's total width and height */
+  overflow: auto;  /* Ensure inner content can be scrolled if it overflows */
+}
+
+.post {
+  background: rgba(255, 255, 255, 0.1);
+  margin-bottom: 20px;
+  padding: 20px;
+  border-radius: 5px;
+  text-align: left;
+}
+
+.post-title {
+  font-size: 1.5em;
+  margin: 0 0 10px;
+  color: #fff;
+  text-decoration: none;
+}
+
+.post-date {
+  font-size: 0.9em;
+  color: #ccc;
+  margin: 0 0 10px;
+}
+
+.post-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.post-actions .btn {
+  margin-left: 10px;
+}
+.list-content{
+  display: flex;
+  justify-content: flex-end;
+}
+.list-btn{
+  background: #0779e4;
+  color: #fff;
+  padding: 5px 20px;
+  text-decoration: none;
+  border-radius: 5px;
+  font-size: 1.1em;
+  display: inline-block;
+  margin-top: 20px;
+  margin-bottom: 5px;
+}
+.list-btn:hover{
+  background: #0056b3;
+}
+.btn {
+  background: #0779e4;
+  color: #fff;
+  padding: 10px 20px;
+  text-decoration: none;
+  border-radius: 5px;
+  font-size: 1.1em;
+  display: inline-block;
+  margin-top: 20px;
+}
+
+.btn.small {
+  padding: 5px 10px;
+  font-size: 0.9em;
+}
+
+.btn:hover {
+  background: #0056b3;
+}
+
+/* Start Section */
+.start-section {
+  padding: 50px 0;
+  background: #f4f4f4;
+  text-align: center;
+}
+
+.start-section .container {
+  max-width: 600px;
+  margin: auto;
+}
+
+.start-section h2 {
+  font-size: 2.5em;
+  margin-bottom: 20px;
+}
+
+.start-section p {
+  font-size: 1.2em;
+}
+
+/* Search Form */
+.search-form {
+  float: right;
+  margin-top: 10px;
+}
+
+.search-form input[type="text"] {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-right: 5px;
+}
+
+.search-form button {
+  padding: 8px 12px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.search-form button:hover {
+  background-color: #0056b3;
+}
