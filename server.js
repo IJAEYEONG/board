@@ -5,19 +5,21 @@ const qs = require("querystring");
 const bcrypt = require("bcrypt");
 const connection = require("./module/db.js");
 const crypto = require("crypto");
-const createSession =require("./module/CreateSession.js")
-const readSession=require('./module/readSession.js')
-const updateSession =require('./module/updateSession.js')
-const deleteSession =require('./module/deleteSession.js')
-const parseCookies=require('./module/parseCookies.js')
-const linksModule = require('./module/fs.js');
+const createSession = require("./module/CreateSession.js");
+const readSession = require("./module/readSession.js");
+const updateSession = require("./module/updateSession.js");
+const deleteSession = require("./module/deleteSession.js");
+const parseCookies = require("./module/parseCookies.js");
+const linksModule = require("./module/fs.js");
 // const ResdFileSync =require('./module/ResdFileSync.js')
-const generateAuthLinks =require('./module/LoginLink.js')
-const fsReadFile =require('./module/fsReadFile.js')
+const generateAuthLinks = require("./module/LoginLink.js");
+const fsReadFile = require("./module/fsReadFile.js");
 const { serveCssFile } = require("./module/css.js");
 
-
 const server = http.createServer((req, res) => {
+  if (serveCssFile(req, res)) {
+    return;
+  }
   const cookies = parseCookies(req.headers.cookie);
   const sessionId = cookies.sessionId;
   if (req.method === "GET" && req.url === "/") {
@@ -38,7 +40,8 @@ const server = http.createServer((req, res) => {
         const { loginLink, signupLink } = generateAuthLinks(sessionData);
         data = data.replace("%LOGIN_LINK%", loginLink);
         data = data.replace("%signup_Link%", signupLink);
-        const query ="SELECT id, title, date FROM submissions ORDER BY date DESC LIMIT 3";
+        const query =
+          "SELECT id, title, date FROM submissions ORDER BY date DESC LIMIT 3";
         connection.query(query, (err, results) => {
           if (err) {
             console.error("데이터베이스에서 제출물 조회 오류:", err);
@@ -87,45 +90,6 @@ const server = http.createServer((req, res) => {
         res.end(data);
       });
     });
-  } 
-  else if (req.url === "/styles.css") {
-    const css = fs.readFileSync("styles.css");
-    res.statusCode = 200;
-    res.setHeader("Content-Type", "text/css; charset=utf-8");
-    console.log(css)
-    res.write(css);
-    res.end();
-  } else if (req.url === "/edit.css") {
-    const EditCss = fs.readFileSync("edit.css");
-    res.statusCode = 200;
-    res.setHeader("Content-Type", "text/css; charset=utf-8");
-    res.write(EditCss);
-    res.end();
-    a
-  } else if (req.url === "/board.css") {
-    const BoardCss = fs.readFileSync("board.css");
-    res.statusCode = 200;
-    res.setHeader("Content-Type", "text/css; charset=utf-8");
-    res.write(BoardCss);
-    res.end();
-  } else if (req.url === "/submission.css") {
-    const Details = fs.readFileSync("submission.css");
-    res.statusCode = 200;
-    res.setHeader("Content-Type", "text/css; charset=utf-8");
-    res.write(Details);
-    res.end();
-  } else if (req.url === "/signup.css") {
-    const signup = fs.readFileSync("signup.css");
-    res.statusCode = 200;
-    res.setHeader("Contnet-Type", "text/css; charset=utf-8");
-    res.write(signup);
-    res.end();
-  } else if (req.url === "/login.css") {
-    const LoginCss = fs.readFileSync("login.css");
-    res.statusCode = 200;
-    res.setHeader("Content-Type", "text/css; charset=utf-8");
-    res.write(LoginCss);
-    res.end();
   } 
   else if (req.method === "GET" && req.url === "/login") {
     fs.readFile("login.html", "utf8", (err, data) => {
@@ -240,7 +204,7 @@ const server = http.createServer((req, res) => {
                   //
                   res.writeHead(302, { Location: "/" });
                   res.end();
-                });// 오류가안났다면 상태코드 302로 내보내고 /로 돌아가게 한다.
+                }); // 오류가안났다면 상태코드 302로 내보내고 /로 돌아가게 한다.
               } else {
                 res.writeHead(401, { "Content-Type": "text/plain" });
                 res.end("Unauthorized");
@@ -264,7 +228,7 @@ const server = http.createServer((req, res) => {
     let body = "";
     req.on("data", (chunk) => {
       body += chunk.toString();
-    });// post이고/submit이면 변수 body를 초기화하고 data이벤트를 사용해서 들어온 데이터를 읽는다.
+    }); // post이고/submit이면 변수 body를 초기화하고 data이벤트를 사용해서 들어온 데이터를 읽는다.
     req.on("end", () => {
       const postData = qs.parse(body);
       // postData라는 변수를 만들어 body에 들어있는 데이터를 queryString.parse 해서 넣어둔다.
@@ -274,7 +238,7 @@ const server = http.createServer((req, res) => {
       //title,content,data를 body에서 가져온다.
       const query =
         "INSERT INTO submissions (title, content, date) VALUES (?, ?, ?)";
-        //submissions 테이블에 title,content,date값을 INSERT한다.
+      //submissions 테이블에 title,content,date값을 INSERT한다.
       connection.query(query, [title, content, date], (err, results) => {
         //connection.query 메서드를 사용해서 query를 실행 title,content,date를 넣는다.
         if (err) {
@@ -286,11 +250,11 @@ const server = http.createServer((req, res) => {
         //만약 err이 났다면 return으로 함수종료.
         res.writeHead(302, { Location: "/" });
         res.end();
-      });// 오류가 나지않았으면 302상태코드를 주고 /를 반환
+      }); // 오류가 나지않았으면 302상태코드를 주고 /를 반환
     });
   } else if (req.method === "GET" && req.url === "/board") {
     fs.readFile("board.html", "utf8", (err, data) => {
-      //GET이고 url이고 /board이면 board.html을 읽는다 
+      //GET이고 url이고 /board이면 board.html을 읽는다
       if (err) {
         console.error("board.html 읽기 오류:", err);
         res.writeHead(500, { "Content-Type": "text/plain" });
