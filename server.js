@@ -15,6 +15,21 @@ const linksModule = require("./module/fs.js");
 const generateAuthLinks = require("./module/LoginLink.js");
 const fsReadFile = require("./module/fsReadFile.js");
 const { serveCssFile } = require("./module/css.js");
+<<<<<<< HEAD
+=======
+function serveHtmlFile(filePath, res) {
+  fs.readFile(filePath, "utf8", (err, data) => {
+    if (err) {
+      console.error(`${filePath} 읽기 오류:`, err);
+      res.writeHead(500, { "Content-Type": "text/plain" });
+      res.end("Internal Server Error");
+      return;
+    }
+    res.writeHead(200, { "Content-Type": "text/html" });
+    res.end(data);
+  });
+}
+>>>>>>> FsModuleTest
 
 const server = http.createServer((req, res) => {
   if (serveCssFile(req, res)) {
@@ -92,16 +107,7 @@ const server = http.createServer((req, res) => {
     });
   } 
   else if (req.method === "GET" && req.url === "/login") {
-    fs.readFile("login.html", "utf8", (err, data) => {
-      if (err) {
-        console.error("login.html 읽기 오류:", err);
-        res.writeHead(500, { "Content-Type": "text/plain" });
-        res.end("Internal Server Error");
-        return;
-      }
-      res.writeHead(200, { "Content-Type": "text/html" });
-      res.end(data);
-    });
+    serveHtmlFile("login.html", res);
   } else if (req.method === "GET" && req.url === "/signup") {
     //get이고 /signup일떄 실행되고 signup.html을 읽는다
     fs.readFile("signup.html", "utf8", (err, data) => {
