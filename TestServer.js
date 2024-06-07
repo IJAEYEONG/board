@@ -15,8 +15,6 @@ const generateAuthLinks = require("./module/LoginLink.js");
 const fsReadFile = require("./module/fsReadFile.js");
 const { serveCssFile } = require("./module/css.js");
 const {serveHtmlFile}=require('./module/FsRead.js')
-const {handleRootRequest}=require('./module/test.js')
-
 const server = http.createServer((req, res) => {
   if (serveCssFile(req, res)) {
     return;
@@ -24,8 +22,42 @@ const server = http.createServer((req, res) => {
   const cookies = parseCookies(req.headers.cookie);
   const sessionId = cookies.sessionId;
   if (req.method === "GET" && req.url === "/") {
-    handleRootRequest(req, res, sessionId);
-  } else if (req.method === "GET" && req.url === "/BoardList") {
+    readSession(sessionId, (err, sessionData) => {
+      if (err) {
+        console.error("세션 읽기 오류:", err);
+        res.writeHead(500, { "Content-Type": "text/plain" });
+        res.end("Internal Server Error");
+        return;
+      }
+      serveHtmlFile("index.html",res);
+      fs.readFile("index.html", "utf8", (err, data) => {
+        if (err) {
+            console.error("index.html 읽기 오류:", err);
+            res.writeHead(500, { "Content-Type": "text/plain" });
+            res.end("Internal Server Error");
+            return;
+        }
+        const { loginLink, signupLink } = generateAuthLinks(sessionData);
+        data = data.replace("%LOGIN_LINK%", loginLink);
+        data = data.replace("%signup_Link%", signupLink);
+        const query =
+          "SELECT id, title, date FROM submissions ORDER BY date DESC LIMIT 3";
+        connection.query(query, (err, results) => {
+          if (err) {
+            console.error("데이터베이스에서 제출물 조회 오류:", err);
+            res.writeHead(500, { "Content-Type": "text/plain" });
+            res.end("Internal Server Error");
+            return;
+          }
+          const linksHTML = linksModule.generateLinks(results);
+          data = data.replace("%a%", linksHTML);
+          res.writeHead(200, { "Content-Type": "text/html" });
+          res.end(data);
+        });
+      });
+    });
+  } 
+  else if (req.method === "GET" && req.url === "/BoardList") {
     fs.readFile("BoardList.html", "utf8", (err, data) => {
       if (err) {
         console.error("BoardList.html 읽기 오류:", err);
@@ -108,7 +140,6 @@ const server = http.createServer((req, res) => {
     req.on("data", (chunk) => {
       body += chunk.toString();
     });
-    //body라는 변수로 초기화 시킨뒤.data라는 이벤트를 on으로 연결해서 post로 보낸 데이터를 crunk에 저장하고 crunk가  가지고 있는 정보나 값들을 문자열로 만들어 리턴해 body에 넣는부분
     req.on("end", () => {
       const postData = qs.parse(body);
       const username = postData.username;
@@ -143,6 +174,7 @@ const server = http.createServer((req, res) => {
                     res.end("Internal Server Error");
                     return;
                   }
+                  //createSession함수로 세션데이터를 가져오고 id와 세션 만료시간을 생성해 둔다.
                   res.setHeader(
                     "Set-Cookie",
                     `sessionId=${sessionId}; HttpOnly`
@@ -174,7 +206,7 @@ const server = http.createServer((req, res) => {
     let body = "";
     req.on("data", (chunk) => {
       body += chunk.toString();
-    }); 
+    });
     req.on("end", () => {
       const postData = qs.parse(body);
       // postData라는 변수를 만들어 body에 들어있는 데이터를 queryString.parse 해서 넣어둔다.
@@ -220,7 +252,6 @@ const server = http.createServer((req, res) => {
     });
   } else if (req.method === "GET" && req.url.startsWith("/submission/")) {
     const id = req.url.split("/").pop();
-    //pop메서드는 배열에서 마지막 요소를 제거하는 메서드.
     const query = "SELECT * FROM submissions WHERE id = ?";
     connection.query(query, [id], (err, results) => {
       if (err) {
