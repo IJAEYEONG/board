@@ -16,7 +16,99 @@ const fsReadFile = require("./module/fsReadFile.js");
 const { serveCssFile } = require("./module/css.js");
 const {serveHtmlFile}=require('./module/FsRead.js')
 const {handleRootRequest}=require('./module/test.js')
+const {handleBoardListRequest}= require('./module/test2.js')
+function handleSignupRequest(req, res) {
+  let body = "";
+  req.on("data", (chunk) => {
+      body += chunk.toString();
+  });
+  req.on("end", async () => {
+      const postData = qs.parse(body);
+      const name = postData.name;
+      const Email = postData.Email;
+      const username = postData.username;
+      const password = postData.password;
+      if (name && Email && username && password) {
+          const hashedPassword = await bcrypt.hash(password, 10);
+          const query =
+              "INSERT INTO site_user (name, Email, username, password) VALUES (?, ?, ?, ?)";
+          connection.query(
+              query,
+              [name, Email, username, hashedPassword],
+              (err, results) => {
+                  if (err) {
+                      console.error("데이터베이스에 사용자 삽입 오류:", err);
+                      res.writeHead(500, { "Content-Type": "text/plain" });
+                      res.end("Internal Server Error");
+                      return;
+                  }
+                  res.writeHead(302, { Location: "/login" });
+                  res.end();
+              }
+          );
+      } else {
+          res.writeHead(400, { "Content-Type": "text/plain" });
+          res.end("Bad Request");
+      }
+  });
+}
+function handleLoginRequest(req, res) {
+  let body = "";
+  req.on("data", (chunk) => {
+      body += chunk.toString();
+  });
+  req.on("end", () => {
+      const postData = qs.parse(body);
+      const username = postData.username;
+      const password = postData.password;
 
+      if (username && password) {
+          const query = "SELECT * FROM site_user WHERE username = ?";
+          connection.query(query, [username], async (err, results) => {
+              if (err) {
+                  console.error("데이터베이스에서 사용자 조회 오류:", err);
+                  res.writeHead(500, { "Content-Type": "text/plain" });
+                  res.end("Internal Server Error");
+                  return;
+              }
+
+              if (results.length > 0) {
+                  const user = results[0];
+                  try {
+                      const passwordMatch = await bcrypt.compare(password, user.password);
+                      if (passwordMatch) {
+                          const sessionData = { loggedIn: true, userId: user.id };
+                          createSession(sessionData, (err, sessionId) => {
+                              if (err) {
+                                  console.error("세션 생성 오류:", err);
+                                  res.writeHead(500, { "Content-Type": "text/plain" });
+                                  res.end("Internal Server Error");
+                                  return;
+                              }
+                              res.setHeader("Set-Cookie", `sessionId=${sessionId}; HttpOnly`);
+                              res.writeHead(302, { Location: "/" });
+                              res.end();
+                          });
+                      } else {
+                          res.writeHead(401, { "Content-Type": "text/plain" });
+                          res.end("Unauthorized");
+                      }
+                  } catch (err) {
+                      console.error("비밀번호 비교 오류:", err);
+                      res.writeHead(500, { "Content-Type": "text/plain" });
+                      res.end("Internal Server Error");
+                  }
+              } else {
+                  res.writeHead(401, { "Content-Type": "text/plain" });
+                  res.end("Unauthorized");
+              }
+          });
+      } else {
+          res.writeHead(400, { "Content-Type": "text/plain" });
+          res.end("Bad Request");
+      }
+  });
+}
 const server = http.createServer((req, res) => {
   if (serveCssFile(req, res)) {
     return;
@@ -26,39 +118,7 @@ const server = http.createServer((req, res) => {
   if (req.method === "GET" && req.url === "/") {
     handleRootRequest(req, res, sessionId);
   } else if (req.method === "GET" && req.url === "/BoardList") {
-    fs.readFile("BoardList.html", "utf8", (err, data) => {
-      if (err) {
-        console.error("BoardList.html 읽기 오류:", err);
-        res.writeHead(500, { "Content-Type": "text/plain" });
-        res.end("Internal Server Error");
-        return;
-      }
-      //BoardList.html을 읽는 부분 에러가 발생하면 return으로 함수 종료.
-      const query = "SELECT id, title, date FROM submissions";
-      connection.query(query, (err, results) => {
-        if (err) {
-          console.error("데이터베이스에서 제출물 조회 오류:", err);
-          res.writeHead(500, { "Content-Type": "text/plain" });
-          res.end("Internal Server Error");
-          return;
-        }
-        //submissiions 테이블에서 id,title,date를 찾아서 선택함 만약 에러가 나오면 return으로 함수종료.
-        const links = results
-          .map(
-            (submission) => `
-          <a href="/submission/${submission.id}">${submission.title}</a> - ${submission.date}
-          <a href="/delete/${submission.id}">삭제</a>
-          <a href="/edit/${submission.id}">수정</a>
-        `
-          )
-          .join("<br>");
-        //위에서 나온 쿼리문을 실행한 결과를 받은 results는 배열로 반환하기떄문에 map으로 html형태로 쪼갠다? 그리고 그 배열을 join으로 결합 시킴.
-        data = data.replace("%a%", links);
-        //위에서 map으로 쪼개고 join으로 결합시킨걸 links에 들어가있기때문에 그 replace로 html에 나타나게 한다.
-        res.writeHead(200, { "Content-Type": "text/html" });
-        res.end(data);
-      });
-    });
+    handleBoardListRequest(req, res);
   } 
   else if (req.method === "GET" && req.url === "/login") {
     serveHtmlFile("login.html", res);
@@ -66,111 +126,10 @@ const server = http.createServer((req, res) => {
     serveHtmlFile("signup.html",res);
   } 
   else if (req.method === "POST" && req.url === "/signup") {
-    let body = "";
-    req.on("data", (chunk) => {
-      body += chunk.toString();
-    });
-    req.on("end", async () => {
-      const postData = qs.parse(body);
-      const name = postData.name;
-      const Email = postData.Email;
-      const username = postData.username;
-      const password = postData.password;
-      //위에서 body안에 넣은 데이터들 queryString.parse 해서 가져온다, 위에서 async를 선언해 비동기방식으로 했다고 정의했다.
-      if (name && Email && username && password) {
-        const hashedPassword = await bcrypt.hash(password, 10);
-        //name, Email, username,password 가 다들어왔으면 잠시 async함수를 정지시키고 패스워드를 10개형태로 암호화시킨다.
-        const query =
-          "INSERT INTO site_user (name, Email, username, password) VALUES (?, ?, ?, ?)";
-        //site_user이라는 테이블에 4개의 값을 INSERT한다라는 쿼리문.
-        connection.query(
-          query,
-          [name, Email, username, hashedPassword],
-          (err, results) => {
-            if (err) {
-              console.error("데이터베이스에 사용자 삽입 오류:", err);
-              res.writeHead(500, { "Content-Type": "text/plain" });
-              res.end("Internal Server Error");
-              return;
-            }
-            res.writeHead(302, { Location: "/login" });
-            res.end();
-          }
-          //connection.query로 query문을 실행시켜 4개의값을 테이블에 저장한다 성공했으면 302상태코드를 말하고 /login 화면으로 돌아간다.
-        );
-      } else {
-        res.writeHead(400, { "Content-Type": "text/plain" });
-        res.end("Bad Request");
-      }
-    });
-  } else if (req.method === "POST" && req.url === "/login") {
-    let body = "";
-    req.on("data", (chunk) => {
-      body += chunk.toString();
-    });
-    //body라는 변수로 초기화 시킨뒤.data라는 이벤트를 on으로 연결해서 post로 보낸 데이터를 crunk에 저장하고 crunk가  가지고 있는 정보나 값들을 문자열로 만들어 리턴해 body에 넣는부분
-    req.on("end", () => {
-      const postData = qs.parse(body);
-      const username = postData.username;
-      const password = postData.password;
-      //postData라는 변수를 만들어 body에 저장해놓은 데이터를 queryString.parse해서 postData에 넣는다
-      if (username && password) {
-        const query = "SELECT * FROM site_user WHERE username = ?";
-        connection.query(query, [username], async (err, results) => {
-          if (err) {
-            console.error("데이터베이스에서 사용자 조회 오류:", err);
-            res.writeHead(500, { "Content-Type": "text/plain" });
-            res.end("Internal Server Error");
-            return;
-          }
-          //만약 username과 password가 들어왔다면 실행하는 부분이고 site_user테이블안에있는 username을 기준으로 찾아본다.
-          if (results.length > 0) {
-            const user = results[0];
-            // selete문은 항상 배열로 봔한하는데 그 결과값이 results안에 들어가있으니까 그 안에있는 첫번째 해당하는것을 user변수에 담는다.
-            try {
-              const passwordMatch = await bcrypt.compare(
-                password,
-                user.password
-              );
-              //사용자가 입력한 비밀번호와 db에 저장된 비밀번호를 비교하는 부분.
-              if (passwordMatch) {
-                const sessionData = { loggedIn: true, userId: user.id };
-                //만약 비밀번호를 비교한게 맞다면 세션 데이터를 만들어준다.
-                createSession(sessionData, (err, sessionId) => {
-                  if (err) {
-                    console.error("세션 생성 오류:", err);
-                    res.writeHead(500, { "Content-Type": "text/plain" });
-                    res.end("Internal Server Error");
-                    return;
-                  }
-                  res.setHeader(
-                    "Set-Cookie",
-                    `sessionId=${sessionId}; HttpOnly`
-                  );
-                  //
-                  res.writeHead(302, { Location: "/" });
-                  res.end();
-                }); // 오류가안났다면 상태코드 302로 내보내고 /로 돌아가게 한다.
-              } else {
-                res.writeHead(401, { "Content-Type": "text/plain" });
-                res.end("Unauthorized");
-              }
-            } catch (err) {
-              console.error("비밀번호 비교 오류:", err);
-              res.writeHead(500, { "Content-Type": "text/plain" });
-              res.end("Internal Server Error");
-            }
-          } else {
-            res.writeHead(401, { "Content-Type": "text/plain" });
-            res.end("Unauthorized");
-          }
-        });
-      } else {
-        res.writeHead(400, { "Content-Type": "text/plain" });
-        res.end("Bad Request");
-      }
-    });
-  } else if (req.method === "POST" && req.url === "/submit") {
+    handleSignupRequest(req, res);
+} else if (req.method === "POST" && req.url === "/login") {
+  handleLoginRequest(req, res);
+} else if (req.method === "POST" && req.url === "/submit") {
     let body = "";
     req.on("data", (chunk) => {
       body += chunk.toString();

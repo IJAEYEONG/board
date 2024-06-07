@@ -1,36 +1,29 @@
-const readSession = require("./readSession");
 const { readFile } = require("./fsReadFile");
 const generateAuthLinks = require("./LoginLink.js");
 const connection = require('./db.js');
 const { generateLinks } = require("./fs.js");
 
-function handleRootRequest(req, res, sessionId) {
-  readSession(sessionId, (err, sessionData) => {
+function handleBoardListRequest(req, res) {
+  fetchRecentSubmissions((err, results) => {
     if (err) {
       sendErrorResponse(res, "Internal Server Error");
       return;
     }
-    readFile("index.html", "utf8", (err, data) => {
+    readFile("BoardList.html", "utf8", (err, data) => {
       if (err) {
         sendErrorResponse(res, "Internal Server Error");
         return;
       }
-      const { loginLink, signupLink } = generateAuthLinks(sessionData);
-      fetchRecentSubmissions((err, results) => {
-        if (err) {
-          sendErrorResponse(res, "Internal Server Error");
-          return;
-        }
-        const linksHTML = generateLinks(results);
-        const responseData = populateTemplate(data, loginLink, signupLink, linksHTML);
-        sendHtmlResponse(res, responseData);
-      });
+      const { loginLink, signupLink } = generateAuthLinks();
+      const linksHTML = generateLinks(results);
+      const responseData = populateTemplate(data, loginLink, signupLink, linksHTML);
+      sendHtmlResponse(res, responseData);
     });
   });
 }
 
 function fetchRecentSubmissions(callback) {
-  const query = "SELECT id, title, date FROM submissions ORDER BY date DESC LIMIT 3";
+  const query = "SELECT id, title, date FROM submissions";
   connection.query(query, [], callback);
 }
 
@@ -52,5 +45,5 @@ function sendErrorResponse(res, message) {
 }
 
 module.exports = {
-  handleRootRequest
+  handleBoardListRequest
 };
