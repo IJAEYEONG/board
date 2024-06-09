@@ -14,6 +14,7 @@ const parseCookies = require('./public/js/module/parseCookies.js');
 const linksModule = require('./public/js/module/fs.js');
 const generateAuthLinks = require('./public/js/module/LoginLink.js');
 const fsReadFile = require('./public/js/module/fsReadFile.js');
+const {handleDeleteRequest} = require('./public/js/module/Delete.js')
 const { serveCssFile } = require('./public/js/module/css.js');
 const { serveHtmlFile } = require('./public/js/module/FsRead.js');
 const { handleRootRequest } = require('./public/js/module/test.js');
@@ -30,6 +31,7 @@ module.exports = {
   createSession,
   readSession,
   handleGetBoardRequest,
+  handleDeleteRequest,
   updateSession,
   deleteSession,
   parseCookies,
