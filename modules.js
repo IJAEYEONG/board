@@ -5,6 +5,7 @@ const qs = require('querystring');
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const connection = require('./public/js/module/db.js');
+const {handleRequest} = require('./public/js/module/Request.js')
 const createSession = require('./public/js/module/CreateSession.js');
 const readSession = require('./public/js/module/readSession.js');
 const updateSession = require('./public/js/module/updateSession.js');
@@ -28,6 +29,7 @@ module.exports = {
   connection,
   createSession,
   readSession,
+  handleRequest,
   updateSession,
   deleteSession,
   parseCookies,
