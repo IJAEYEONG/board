@@ -1,5 +1,5 @@
 // handlers.js
-const { qs, bcrypt, connection, createSession } = require('../modules.js');
+const { qs, bcrypt, connection, createSession } = require('../../../modules.js');
 
 function handleSignupRequest(req, res) {
   let body = '';
