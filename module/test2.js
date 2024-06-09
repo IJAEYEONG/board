@@ -9,7 +9,7 @@ function handleBoardListRequest(req, res) {
       sendErrorResponse(res, "Internal Server Error");
       return;
     }
-    readFile("BoardList.html", "utf8", (err, data) => {
+    readFile("./public/html/BoardList.html", "utf8", (err, data) => {
       if (err) {
         sendErrorResponse(res, "Internal Server Error");
         return;

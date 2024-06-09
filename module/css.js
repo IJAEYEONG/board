@@ -2,12 +2,12 @@ const fs = require("fs");
 // test
 
 const cssFiles = {
-  "/styles.css": "styles.css",
-  "/edit.css": "edit.css",
-  "/board.css": "board.css",
-  "/submission.css": "submission.css",
-  "/signup.css": "signup.css",
-  "/login.css": "login.css"
+  "/styles.css": "public/css/styles.css",
+  "/edit.css": "public/css/edit.css",
+  "/board.css": "public/css/board.css",
+  "/submission.css": "public/css/submission.css",
+  "/signup.css": "public/css/signup.css",
+  "/login.css": "public/css/login.css"
 };
 
 function serveCssFile(req, res) {

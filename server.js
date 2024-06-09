@@ -1,5 +1,5 @@
 // server.js
-const { http,fs,connection, serveCssFile, parseCookies, serveHtmlFile, handleRootRequest, handleBoardListRequest, edit } = require('./modules.js');
+const { http,fs,connection, serveCssFile, parseCookies, serveHtmlFile, handleRootRequest, handleBoardListRequest, edit,deleteSession } = require('./modules.js');
 const { handleSignupRequest, handleLoginRequest, test } = require('./module/handlers.js')
 const server = http.createServer((req, res) => {
   if (serveCssFile(req, res)) {
@@ -12,9 +12,9 @@ const server = http.createServer((req, res) => {
   } else if (req.method === "GET" && req.url === "/BoardList") {
     handleBoardListRequest(req, res);
   } else if (req.method === "GET" && req.url === "/login") {
-    serveHtmlFile("login.html", res);
+    serveHtmlFile("./public/html/login.html", res);
   } else if (req.method === "GET" && req.url === "/signup") {
-    serveHtmlFile("signup.html", res);
+    serveHtmlFile("./public/html/signup.html", res);
   } else if (req.method === "POST" && req.url === "/signup") {
     handleSignupRequest(req, res);
   } else if (req.method === "POST" && req.url === "/login") {
@@ -22,7 +22,7 @@ const server = http.createServer((req, res) => {
   } else if (req.method === "POST" && req.url === "/submit") {
     test(req, res);
   } else if (req.method === "GET" && req.url === "/board") {
-    fs.readFile("board.html", "utf8", (err, data) => {
+    fs.readFile("./public/html/board.html", "utf8", (err, data) => {
       if (err) {
         console.error("board.html 읽기 오류:", err);
         res.writeHead(500, { "Content-Type": "text/plain" });
@@ -53,7 +53,7 @@ const server = http.createServer((req, res) => {
       }
       if (results.length > 0) {
         const submission = results[0];
-        fs.readFile("submission.html", "utf8", (err, data) => {
+        fs.readFile("./public/html/submission.html", "utf8", (err, data) => {
           if (err) {
             console.error("submission.html 읽기 오류:", err);
             res.writeHead(500, { "Content-Type": "text/plain" });
@@ -108,7 +108,7 @@ const server = http.createServer((req, res) => {
       }
       if (results.length > 0) {
         const submission = results[0];
-        fs.readFile("edit.html", "utf8", (err, data) => {
+        fs.readFile("./public/html/edit.html", "utf8", (err, data) => {
           if (err) {
             console.error("edit.html 읽기 오류:", err);
             res.writeHead(500, { "Content-Type": "text/plain" });

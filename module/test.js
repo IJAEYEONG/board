@@ -10,7 +10,7 @@ function handleRootRequest(req, res, sessionId) {
       sendErrorResponse(res, "Internal Server Error");
       return;
     }
-    readFile("index.html", "utf8", (err, data) => {
+    readFile("./public/html/index.html", "utf8", (err, data) => {
       if (err) {
         sendErrorResponse(res, "Internal Server Error");
         return;
