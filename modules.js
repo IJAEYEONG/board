@@ -13,7 +13,9 @@ const deleteSession = require('./public/js/module/deleteSession.js');
 const parseCookies = require('./public/js/module/parseCookies.js');
 const linksModule = require('./public/js/module/fs.js');
 const generateAuthLinks = require('./public/js/module/LoginLink.js');
+const {handleEditRequest,handlePostEditRequest} =require("./public/js/module/EditHandler.js")
 const fsReadFile = require('./public/js/module/fsReadFile.js');
+const {handleLogoutRequest} =require('./public/js/module/Logout.js')
 const {handleDeleteRequest} = require('./public/js/module/Delete.js')
 const { serveCssFile } = require('./public/js/module/css.js');
 const { serveHtmlFile } = require('./public/js/module/FsRead.js');
@@ -29,6 +31,7 @@ module.exports = {
   crypto,
   connection,
   createSession,
+  handleLogoutRequest,
   readSession,
   handleGetBoardRequest,
   handleDeleteRequest,
@@ -42,5 +45,7 @@ module.exports = {
   serveHtmlFile,
   handleRootRequest,
   handleBoardListRequest,
+  handleEditRequest,
+  handlePostEditRequest,
   edit
 };
