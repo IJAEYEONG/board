@@ -1,8 +1,7 @@
 // server.js
 const { http,fs,connection, serveCssFile, parseCookies, serveHtmlFile, handleRootRequest, handleBoardListRequest, edit,deleteSession,handleGetBoardRequest,handleDeleteRequest,handleLogoutRequest,handleEditRequest,
-  handlePostEditRequest } = require('./modules.js');
+  handleGetSubmissionRequest} = require('./modules.js');
 const { handleSignupRequest, handleLoginRequest, test } = require('./public/js/module/handlers.js')
-
 const server = http.createServer((req, res) => {
   if (serveCssFile(req, res)) {
     return;
@@ -34,7 +33,7 @@ const server = http.createServer((req, res) => {
   } else if (req.method === "GET" && req.url.startsWith("/edit/")) {
     handleEditRequest(req, res);
   } else if (req.method === "POST" && req.url === "/edit") {
-    handlePostEditRequest(req, res);
+    handleEditRequest(req, res);
   } else {
     res.writeHead(404, { "Content-Type": "text/plain" });
     res.end("Not Found");
