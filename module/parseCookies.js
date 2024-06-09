@@ -12,4 +12,4 @@ const parseCookies = (cookie = "") =>
       return acc;
       //누적된 값을 종료
     }, {});
-module.exports=parseCookies
+    module.exports=parseCookies

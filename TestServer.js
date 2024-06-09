@@ -3,18 +3,18 @@ const http = require("http");
 const fs = require("fs");
 const qs = require("querystring");
 const bcrypt = require("bcrypt");
-const connection = require("./module/db.js");
+const connection = require(".//db.js");
 const crypto = require("crypto");
-const createSession = require("./module/CreateSession.js");
-const readSession = require("./module/readSession.js");
-const updateSession = require("./module/updateSession.js");
-const deleteSession = require("./module/deleteSession.js");
-const parseCookies = require("./module/parseCookies.js");
-const linksModule = require("./module/fs.js");
-const generateAuthLinks = require("./module/LoginLink.js");
-const fsReadFile = require("./module/fsReadFile.js");
-const { serveCssFile } = require("./module/css.js");
-const {serveHtmlFile}=require('./module/FsRead.js')
+const createSession = require(".//CreateSession.js");
+const readSession = require(".//readSession.js");
+const updateSession = require(".//updateSession.js");
+const deleteSession = require(".//deleteSession.js");
+const parseCookies = require(".//parseCookies.js");
+const links = require(".//fs.js");
+const generateAuthLinks = require(".//LoginLink.js");
+const fsReadFile = require(".//fsReadFile.js");
+const { serveCssFile } = require(".//css.js");
+const {serveHtmlFile}=require('.//FsRead.js')
 const server = http.createServer((req, res) => {
   if (serveCssFile(req, res)) {
     return;
@@ -49,7 +49,7 @@ const server = http.createServer((req, res) => {
             res.end("Internal Server Error");
             return;
           }
-          const linksHTML = linksModule.generateLinks(results);
+          const linksHTML = links.generateLinks(results);
           data = data.replace("%a%", linksHTML);
           res.writeHead(200, { "Content-Type": "text/html" });
           res.end(data);
