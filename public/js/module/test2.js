@@ -2,6 +2,13 @@ const { readFile } = require("./fsReadFile.js");
 const generateAuthLinks = require("./LoginLink.js");
 const connection = require('./db.js');
 const { generateLinks } = require("./fs.js");
+<<<<<<< HEAD
+=======
+const {populateTemplate}=require('./DataTemplate.js')
+const{sendErrorResponse}=require('./ErrorResponse.js')
+const {sendHtmlResponse}=require('./HtmlResponse.js')
+const {fetchRecentSubmissions}=require('./SearchSubmiss.js')
+>>>>>>> fsTest
 function handleBoardListRequest(req, res) {
   fetchRecentSubmissions((err, results) => {
     if (err) {
@@ -20,6 +27,7 @@ function handleBoardListRequest(req, res) {
     });
   });
 }
+<<<<<<< HEAD
 function fetchRecentSubmissions(callback) {
   const query = "SELECT id, title, date FROM submissions";
   connection.query(query, [], callback);
@@ -38,6 +46,8 @@ function sendErrorResponse(res, message) {
   res.writeHead(500, { "Content-Type": "text/plain" });
   res.end(message);
 }
+=======
+>>>>>>> fsTest
 module.exports = {
   handleBoardListRequest
 };
