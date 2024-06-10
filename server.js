@@ -1,7 +1,9 @@
 // server.js
 const { http,fs, serveCssFile, parseCookies, serveHtmlFile, handleRootRequest, handleBoardListRequest,handleGetBoardRequest,handleDeleteRequest,handleLogoutRequest,handleEditRequest,
+  handleSignupRequest, handleLoginRequest,
   handleGetSubmissionRequest} = require('./modules.js');
-const { handleSignupRequest, handleLoginRequest, test } = require('./public/js/module/handlers.js')
+const { test } = require('./public/js/module/handlers.js')
+
 const server = http.createServer((req, res) => {
   if (serveCssFile(req, res)) {
     return;

@@ -1,9 +1,11 @@
 const readSession = require("./readSession.js");
 const { readFile } = require("./fsReadFile.js");
 const generateAuthLinks = require("./LoginLink.js");
-const connection = require('./db.js');
+const {fetchRecentSubmissions}=require('./boardLimit.js')
 const { generateLinks } = require("./fs.js");
-
+const {populateTemplate}=require('./DataTemplate.js')
+const{sendErrorResponse}=require('./ErrorResponse.js')
+const {sendHtmlResponse}=require('./HtmlResponse.js')
 function handleRootRequest(req, res, sessionId) {
   readSession(sessionId, (err, sessionData) => {
     if (err) {
@@ -29,28 +31,6 @@ function handleRootRequest(req, res, sessionId) {
   });
 }
 
-function fetchRecentSubmissions(callback) {
-  const query = "SELECT id, title, date FROM submissions ORDER BY date DESC LIMIT 3";
-  connection.query(query, [], callback);
-}
-
-function populateTemplate(templateData, loginLink, signupLink, linksHTML) {
-  let data = templateData.replace("%LOGIN_LINK%", loginLink);
-  data = data.replace("%signup_Link%", signupLink);
-  data = data.replace("%a%", linksHTML);
-  return data;
-}
-
-function sendHtmlResponse(res, data) {
-  res.writeHead(200, { "Content-Type": "text/html" });
-  res.end(data);
-}
-
-function sendErrorResponse(res, message) {
-  res.writeHead(500, { "Content-Type": "text/plain" });
-  res.end(message);
-  // 
-}
 
 module.exports = {
   handleRootRequest

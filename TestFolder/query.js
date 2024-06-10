@@ -1,4 +1,4 @@
-const connection = require('./db');
+const connection = require('../public/js/module/db');
 
 function query(res, callback) {
   const query =
