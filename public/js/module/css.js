@@ -1,6 +1,4 @@
 const fs = require("fs");
-// test
-
 const cssFiles = {
   "/styles.css": "public/css/styles.css",
   "/edit.css": "public/css/edit.css",
@@ -9,7 +7,6 @@ const cssFiles = {
   "/signup.css": "public/css/signup.css",
   "/login.css": "public/css/login.css"
 };
-
 function serveCssFile(req, res) {
   const filePath = cssFiles[req.url];
   if (filePath) {
@@ -30,5 +27,4 @@ function serveCssFile(req, res) {
   }
   return false;
 }
-
 module.exports = { serveCssFile };

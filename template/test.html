@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+  font-family: sans-serif;
+  margin: 0 50px;
+}
+
+.container {
+  display: flex;
+  gap: 50px;
+}
+
+#posts {
+  width: 400px;
+}
+
+i {
+  cursor: pointer;
+}
+#posts div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.options {
+  display: flex;
+  gap: 25px;
+}
+
+#msg {
+  color: red;
+}
+  </style>
+  <title>Document</title>
+</head>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+<body>
+  <h1>test </h1>
+  <div class="container">
+    <div class="left">
+      <form id="form">
+    <label for="post"> TestPost</label>
+    <br><br>
+    <textarea name="post" id="input" cols="30" rows="10"></textarea>
+    <br> <br>
+    <div id="msg"></div>
+    <button type="submit">Post</button>
+  </form>
+    </div>
+    <div class="right">
+      <h3>test  </h3>
+  <div id="posts"></div>
+    </div>
+  </div>
+<script>
+  //html에서 id를 찾아는부분
+let form = document.getElementById("form");
+let input = document.getElementById("input");
+let msg = document.getElementById("msg");
+let posts = document.getElementById("posts");
+//
+form.addEventListener("submit", (e) => {
+  e.preventDefault();
+  console.log("button clicked");
+
+  formValidation();
+});
+
+let formValidation = () => {
+  if (input.value === "") {
+    // Other codes are here
+    alert("내용을 입력하세요")
+  } else {
+    // Other codes are here
+    acceptData();
+  }
+};
+let data = {};
+let acceptData = () => {
+  data["text"] = input.value;
+  // console.log(data);
+  createPost();
+};
+let createPost = () => {
+  posts.innerHTML += `
+  <div>
+    <p>${data.text}</p>
+    <span class="options">
+      <i onClick="editPost(this)" class="fas fa-edit"></i>
+      <i onClick="deletePost(this)" class="fas fa-trash-alt"></i>
+    </span>
+  </div>
+  `;
+  input.value = "";
+};
+
+// 삭제
+
+let deletePost = (e) => {
+  e.parentElement.parentElement.remove();
+};
+let editPost = (e) => {
+  input.value = e.parentElement.previousElementSibling.innerHTML;
+  e.parentElement.parentElement.remove();
+};
+
+</script>
+</body>
+</html>

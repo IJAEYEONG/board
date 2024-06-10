@@ -1,6 +1,7 @@
 const connection = require("./db.js");
+
 function readSession(sessionId, callback) {
-  const query ="SELECT session_data FROM sessions WHERE session_id = ? AND expires_at > NOW()";
+  const query = "SELECT session_data FROM sessions WHERE session_id = ? AND expires_at > NOW()";
   connection.query(query, [sessionId], (err, results) => {
     if (err) {
       return callback(err);
@@ -13,4 +14,5 @@ function readSession(sessionId, callback) {
     callback(null, sessionData);
   });
 }
-module.exports=readSession
+
+module.exports = readSession;

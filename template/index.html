@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://kit.fontawesome.com/ab5f5b9596.js" crossorigin="anonymous"></script>
+  <title>Document</title>
+  <style> 
+  </style>
+</head>
+
+<body>
+  <script >
+    window.onload=function(){
+      const styleElement = document.createElement("style");
+        styleElement.innerHTML = "html, body {height: 100%;}";
+        document.head.appendChild(styleElement);
+        document.body.style.width="100%";
+        document.body.style.height="100vh";
+        document.body.style.margin="0";
+        document.body.style.padding="0";
+      const navbar = document.createElement('div');
+        navbar.setAttribute('class','navbar');
+        navbar.style.display="flex";
+        navbar.style.alignItems="center";
+        navbar.style.background="#263343"
+        navbar.style.justifyContent='space-between';
+        navbar.style.padding="8px 12px";
+        document.body.append
+        
+        Child(navbar);
+      const navbar__logo=document.createElement('div');
+        navbar__logo.style.fontSize='24px';
+        navbar__logo.style.color="white";
+        navbar.appendChild(navbar__logo);
+      const icon=document.createElement('i');
+        icon.setAttribute('class', 'fa-solid fa-otter');
+        icon.style.color='#d49466';
+        navbar__logo.appendChild(icon);
+      const logo_Text= document.createElement('a');
+        logo_Text.setAttribute('href','#');
+        logo_Text.innerText ='text';
+        logo_Text.style.marginLeft='10px';
+        logo_Text.style.textDecoration='none';
+        logo_Text.style.color='white';
+        navbar__logo.appendChild(logo_Text);
+      const menu = document.createElement('ul');
+        menu.setAttribute('class','navbar__menu');
+          menu.style.display='flex';
+          menu.style.paddingLeft='0px';
+          menu.style.listStyle='none';
+        for(var i =0; i<5; i++){
+          const li =document.createElement("li");
+          const a =document.createElement('a');
+          li.style.color='white';
+          li.style.padding='8px 12px';
+          a.setAttribute('href','#');
+          a.style.color='white';
+          a.style.textDecoration='none';
+          li.appendChild(a);
+          menu.appendChild(li);
+        }
+        navbar.appendChild(menu);
+      const menuitmes=document.querySelectorAll('.navbar__menu li');
+        menuitmes.forEach(menuitmes =>{
+          menuitmes.addEventListener('mouseover',function(){
+            this.style.backgroundColor="#d49466";
+            this.style.borderRadius= "4px";
+          });
+          menuitmes.addEventListener('mouseout', function() {
+            this.style.backgroundColor = '';
+            });
+
+        });
+      const firstLi=document.querySelector('.navbar__menu li a');
+        if(firstLi){
+          firstLi.innerHTML='Home';
+        }
+      const second =document.querySelectorAll('.navbar__menu li a');
+        const test2=second[1];
+        if(test2){
+          test2.innerText='Gallery';
+      }
+      const third =document.querySelectorAll('.navbar__menu li a');
+        const test3=third[2];
+        if(test3){
+          test3.innerText='Wedding';
+      }
+      const squed =document.querySelectorAll('.navbar__menu li a');
+        const test4=squed[3];
+        if(test4){
+          test4.innerText='FAQ';
+        }
+      const five =document.querySelectorAll('.navbar__menu li a');
+        const test5=five[4];
+        if(test5){
+          test5.innerText='FAQ';
+        }
+
+    const menu_icons = document.createElement('ul');
+      menu_icons.setAttribute('class','navbar__icons');
+        menu_icons.style.display='flex';
+        menu_icons.style.color='white';
+        menu_icons.style.listStyle='none';
+        menu_icons.style.paddingLeft='0px';
+        for(var i=0; i<2;i++){
+          const la=document.createElement('li');
+          const al=document.createElement('i');
+          la.style.padding='8px 12px';
+          menu_icons.appendChild(la);
+          la.appendChild(al);
+        }
+        
+        navbar.appendChild(menu_icons);  
+      const la_1 =document.querySelectorAll('.navbar__icons li i');
+        const al_1 = la_1[0];
+        if(al_1){
+          al_1.setAttribute('class','fa-brands fa-github');
+        }
+      const la_2=document.querySelectorAll('.navbar__icons li i');
+        const al_2 = la_2[1];
+        if(la_2){
+          al_2.setAttribute('class','fa-brands fa-discord');
+        }
+      const media_icons=document.createElement('a');
+        media_icons.setAttribute('href','#','class','navbar__toogleBtn');
+        media_icons.style.display='none';
+        media_icons.style.position='absolute';
+        media_icons.style.right='32px';
+        media_icons.style.fontSize='24px';
+        media_icons.style.color='#d49466';
+      const meida_icons_i =document.createElement('i');
+        meida_icons_i.setAttribute('class','fa-solid fa-bars');
+        navbar.appendChild(media_icons);
+        media_icons.appendChild(meida_icons_i);
+      const search_bar =document.createElement("div");
+        search_bar.setAttribute("class","search_bar");
+        search_bar.style.width="100%"
+        search_bar.style.height="20%";
+        search_bar.style.display='flex';
+        search_bar.style.justifyContent='center';
+        search_bar.style.border="1px solid black";
+        document.body.appendChild(search_bar);
+      const search_wrap =document.createElement('div');
+        search_wrap.style.width='60%';
+        search_wrap.style.height="100%";
+        search_wrap.style.display="flex";
+        search_wrap.style.justifyContent='center';
+        search_wrap.style.border='1px solid black';
+        search_bar.appendChild(search_wrap);
+      const search_box =document.createElement('div');
+        search_box.setAttribute('calss','search_box');
+        search_box.style.width='30%';
+        search_box.style.height='10%';
+        search_box.style.position="absolute";
+        search_box.style.top="150px";
+        search_box.style.display='flex';
+        search_box.style.borderRadius='100px';
+        search_box.style.border='1px solid black';
+        search_wrap.appendChild(search_box);
+      const search_iconBar = document.createElement('div');
+        search_box.setAttribute('class','search_box');
+        search_iconBar.style.width='50px';
+        search_iconBar.style.height='100%';
+        search_iconBar.style.position='absolute';
+        search_iconBar.style.left='380px';
+        search_iconBar.style.border='1px solid black';
+        search_box.appendChild(search_iconBar); 
+      const search_input =document.createElement('input');
+      search_input.setAttribute('type','text','placeholder','검색어', 'class','search_input');
+        search_input.style.width="75%";
+        search_input.style.height="95%";
+        search_input.style.position="absolute";
+        search_input.style.left="30px"
+        search_input.style.border='1px solid black';
+        search_box.appendChild(search_input);
+      
+      const slide = document.createElement('div');
+        slide.style.display='flex';
+        slide.style.justifyContent='center';
+        slide.style.width='100%';
+        slide.style.height='50%';
+        slide.style.border='1px solid blue';
+        document.body.appendChild(slide);
+      const slide_second =document.createElement('div');
+        slide_second.setAttribute('class','slide_box');
+        slide_second.style.width='80%';
+        slide_second.style.height='100%';
+        slide_second.style.border='1px solid red';
+        slide.appendChild(slide_second);
+      const prev =document.createElement('div');
+        prev.setAttribute('class','prev');
+        prev.style.position='absolute';
+        prev.style.top='400px';
+        prev.style.width='5%';
+        prev.style.height='10%';
+        prev.style.border='1px solid black';
+        slide_second.appendChild(prev);
+      const next=document.createElement('div');
+        next.setAttribute('class','next');
+        next.style.position='absolute';
+        next.style.right='10%';
+        next.style.top='390px';
+        next.style.width='5%';
+        next.style.height='10%';
+        next.style.border='1px solid gold';
+        slide_second.appendChild(next);
+      const content=document.createElement('div');
+        content.style.width='100%';
+        content.style.height='90%';
+        content.style.display='flex';
+        content.style.justifyContent='center';
+        content.style.border='1px solid black';
+        document.body.appendChild(content);
+      const content_box=document.createElement('div');
+        content_box.style.width='50%';
+        content_box.style.height='100%';
+        content_box.style.display='grid';
+        content_box.style.border='1px solid black';
+        content.appendChild(content_box);
+      const text_box =document.createElement('div');
+        text_box.style.width='100%';
+        text_box.style.height='100%';
+        text_box.style.display='flex';
+        text_box.style.border='1px solid black';
+        content_box.appendChild(text_box);
+      const text_box2=document.createElement('div');
+        text_box2.style.width="100%";
+        text_box2.style.height="100%";
+        text_box2.style.display="flex";
+        text_box2.style.border="1px solid black";
+        content_box.appendChild(text_box2);
+      const board_box = document.createElement('div');
+        board_box.style.marginLeft="10px"
+        board_box.style.width="40%";
+        board_box.style.height="90%";
+        board_box.style.borderRadius='30px';
+        board_box.style.border="1px solid black";
+        text_box.appendChild(board_box);
+      const board_box2 = document.createElement('div');
+        board_box2.style.marginLeft="150px"
+        board_box2.style.width="40%";
+        board_box2.style.height="90%";
+        board_box2.style.borderRadius='30px';
+        board_box2.style.border="1px solid black";
+        text_box.appendChild(board_box2);
+      const board_box3 = document.createElement('div');
+          board_box3.style.marginLeft="10px"
+          board_box3.style.width="40%";
+          board_box3.style.height="90%";
+          board_box3.style.borderRadius='30px';
+          board_box3.style.border="1px solid black";
+          text_box2.appendChild(board_box3);
+        const board_box4 = document.createElement('div');
+          board_box4.style.marginLeft="150px"
+          board_box4.style.width="40%";
+          board_box4.style.height="90%";
+          board_box4.style.borderRadius='30px';
+          board_box4.style.border="1px solid black";
+          text_box2.appendChild(board_box4);
+        const gallery =document.createElement("div");
+          gallery.style.width="100%";
+          gallery.style.height="30%";
+          gallery.style.display='flex';
+          gallery.style.justifyContent='center';
+          gallery.style.border="1px solid black";
+          document.body.appendChild(gallery);
+        const gallery_wrap=document.createElement('div');
+          gallery_wrap.style.width="50%";
+          gallery_wrap.style.height="100%";
+          gallery_wrap.style.display='flex';
+          gallery_wrap.style.border="1px solid black";
+          gallery.appendChild(gallery_wrap);
+        const gallery_box=document.createElement("div");
+          gallery_box.style.marginLeft="10px"
+          gallery_box.style.width="40%";
+          gallery_box.style.height="90%";
+          gallery_box.style.borderRadius='30px';
+          gallery_box.style.border='1px solid black';
+          gallery_wrap.appendChild(gallery_box);
+        const gallery_box2=document.createElement("div");
+          gallery_box2.style.marginLeft="150px"
+          gallery_box2.style.width="40%";
+          gallery_box2.style.height="90%";
+          gallery_box2.style.borderRadius='30px';
+          gallery_box2.style.border='1px solid black';
+          gallery_wrap.appendChild(gallery_box2);
+        }
+        
+        
+  </script>
+</body>
+</html>
