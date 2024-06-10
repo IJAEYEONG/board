@@ -1,5 +1,5 @@
 // server.js
-const { http,fs,connection, serveCssFile, parseCookies, serveHtmlFile, handleRootRequest, handleBoardListRequest, edit,deleteSession,handleGetBoardRequest,handleDeleteRequest,handleLogoutRequest,handleEditRequest,
+const { http,fs, serveCssFile, parseCookies, serveHtmlFile, handleRootRequest, handleBoardListRequest,handleGetBoardRequest,handleDeleteRequest,handleLogoutRequest,handleEditRequest,
   handleGetSubmissionRequest} = require('./modules.js');
 const { handleSignupRequest, handleLoginRequest, test } = require('./public/js/module/handlers.js')
 const server = http.createServer((req, res) => {

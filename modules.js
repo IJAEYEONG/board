@@ -23,7 +23,6 @@ const { serveHtmlFile } = require('./public/js/module/FsRead.js');
 const { handleRootRequest } = require('./public/js/module/test.js');
 const { handleBoardListRequest } = require('./public/js/module/test2.js');
 const { edit } = require('./public/js/module/edit.js');
-
 module.exports = {
   http,
   fs,
