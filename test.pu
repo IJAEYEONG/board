@@ -1,0 +1,10 @@
+@startuml test
+start
+:시작;
+if(로그인?)then(yes)
+:반갑습니다.;
+else(no)
+:로그인하세요;
+endif
+end
+@enduml

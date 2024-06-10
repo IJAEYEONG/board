@@ -25,7 +25,7 @@ const server = http.createServer((req, res) => {
   } else if (req.method === "GET" && req.url === "/board") {
     handleGetBoardRequest(req, res);
   }  else if (req.method === "GET" && req.url.startsWith("/submission/")) {
-    handleGetSubmissionRequest(req, res);
+  handleGetSubmissionRequest(req, res);
   } else if (req.method === "GET" && req.url.startsWith("/delete/")) {
     handleDeleteRequest(req, res);
   } else if (req.method === "GET" && req.url === "/logout") {
