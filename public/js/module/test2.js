@@ -1,11 +1,11 @@
 const { readFile } = require("./fsReadFile.js");
 const generateAuthLinks = require("./LoginLink.js");
-const connection = require('./db.js');
+const connection = require("./db.js");
 const { generateLinks } = require("./fs.js");
-const { populateTemplate } = require('./DataTemplate.js');
-const { sendErrorResponse } = require('./ErrorResponse.js');
-const { sendHtmlResponse } = require('./HtmlResponse.js');
-const { fetchRecentSubmissions } = require('./SearchSubmiss.js'); // 이미 존재하는 fetchRecentSubmissions 사용
+const { populateTemplate } = require("./DataTemplate.js");
+const { sendErrorResponse } = require("./ErrorResponse.js");
+const { sendHtmlResponse } = require("./HtmlResponse.js");
+const { fetchRecentSubmissions } = require("./SearchSubmiss.js"); // 이미 존재하는 fetchRecentSubmissions 사용
 
 function handleBoardListRequest(req, res) {
   fetchRecentSubmissions((err, results) => {
@@ -20,12 +20,17 @@ function handleBoardListRequest(req, res) {
       }
       const { loginLink, signupLink } = generateAuthLinks();
       const linksHTML = generateLinks(results);
-      const responseData = populateTemplate(data, loginLink, signupLink, linksHTML);
+      const responseData = populateTemplate(
+        data,
+        loginLink,
+        signupLink,
+        linksHTML
+      );
       sendHtmlResponse(res, responseData);
     });
   });
 }
 
 module.exports = {
-  handleBoardListRequest
+  handleBoardListRequest,
 };
