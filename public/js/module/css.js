@@ -5,7 +5,8 @@ const cssFiles = {
   "/board.css": "public/css/board.css",
   "/submission.css": "public/css/submission.css",
   "/signup.css": "public/css/signup.css",
-  "/login.css": "public/css/login.css"
+  "/login.css": "public/css/login.css",
+  "/BoardList.css":"public/css/BoardList.css"
 };
 function serveCssFile(req, res) {
   const filePath = cssFiles[req.url];

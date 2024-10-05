@@ -1,11 +1,12 @@
-const { fetchRecentSubmissions } = require('./boardLimit.js');
+const { fetchRecentSubmissions } = require("./boardLimit.js");
 const { readFile } = require("./fsReadFile.js");
 const generateAuthLinks = require("./LoginLink.js");
 const { generateLinks } = require("./fs.js");
-const { populateTemplate } = require('./DataTemplate.js');
-const { sendErrorResponse } = require('./ErrorResponse.js');
-const { sendHtmlResponse } = require('./HtmlResponse.js');
-const readSession=require('./readSession.js')
+const { populateTemplate } = require("./DataTemplate.js");
+const { sendErrorResponse } = require("./ErrorResponse.js");
+const { sendHtmlResponse } = require("./HtmlResponse.js");
+const readSession = require("./readSession.js");
+
 function handleRootRequest(req, res, sessionId) {
   readSession(sessionId, (err, sessionData) => {
     if (err) {
@@ -27,7 +28,12 @@ function handleRootRequest(req, res, sessionId) {
 
         const { loginLink, signupLink } = generateAuthLinks(sessionId);
         const linksHTML = generateLinks(results);
-        const responseData = populateTemplate(data, loginLink, signupLink, linksHTML);
+        const responseData = populateTemplate(
+          data,
+          loginLink,
+          signupLink,
+          linksHTML
+        );
 
         sendHtmlResponse(res, responseData);
       });
@@ -36,5 +42,5 @@ function handleRootRequest(req, res, sessionId) {
 }
 
 module.exports = {
-  handleRootRequest
+  handleRootRequest,
 };

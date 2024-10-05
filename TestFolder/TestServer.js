@@ -14,7 +14,7 @@ const links = require(".//fs.js");
 const generateAuthLinks = require(".//LoginLink.js");
 const fsReadFile = require(".//fsReadFile.js");
 const { serveCssFile } = require(".//css.js");
-const {serveHtmlFile}=require('.//FsRead.js')
+const { serveHtmlFile } = require(".//FsRead.js");
 const server = http.createServer((req, res) => {
   if (serveCssFile(req, res)) {
     return;
@@ -29,13 +29,13 @@ const server = http.createServer((req, res) => {
         res.end("Internal Server Error");
         return;
       }
-      serveHtmlFile("index.html",res);
+      serveHtmlFile("index.html", res);
       fs.readFile("index.html", "utf8", (err, data) => {
         if (err) {
-            console.error("index.html 읽기 오류:", err);
-            res.writeHead(500, { "Content-Type": "text/plain" });
-            res.end("Internal Server Error");
-            return;
+          console.error("index.html 읽기 오류:", err);
+          res.writeHead(500, { "Content-Type": "text/plain" });
+          res.end("Internal Server Error");
+          return;
         }
         const { loginLink, signupLink } = generateAuthLinks(sessionData);
         data = data.replace("%LOGIN_LINK%", loginLink);
@@ -56,8 +56,7 @@ const server = http.createServer((req, res) => {
         });
       });
     });
-  } 
-  else if (req.method === "GET" && req.url === "/BoardList") {
+  } else if (req.method === "GET" && req.url === "/BoardList") {
     fs.readFile("BoardList.html", "utf8", (err, data) => {
       if (err) {
         console.error("BoardList.html 읽기 오류:", err);
@@ -91,13 +90,11 @@ const server = http.createServer((req, res) => {
         res.end(data);
       });
     });
-  } 
-  else if (req.method === "GET" && req.url === "/login") {
+  } else if (req.method === "GET" && req.url === "/login") {
     serveHtmlFile("login.html", res);
   } else if (req.method === "GET" && req.url === "/signup") {
-    serveHtmlFile("signup.html",res);
-  } 
-  else if (req.method === "POST" && req.url === "/signup") {
+    serveHtmlFile("signup.html", res);
+  } else if (req.method === "POST" && req.url === "/signup") {
     let body = "";
     req.on("data", (chunk) => {
       body += chunk.toString();
